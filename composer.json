@@ -1,0 +1,34 @@
+{
+  "name": "hyperized/benchmark",
+  "description": "A small PHP Benchmark project",
+  "keywords": [
+    "benchmark",
+    "mysql",
+    "disk",
+    "modules",
+    "php"
+  ],
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Gerben Geijteman",
+      "email": "gerben@hyperized.net"
+    }
+  ],
+  "require": {
+    "php": ">=7.0",
+    "symfony/config": "^3.3",
+    "symfony/yaml": "^3.3",
+    "php-di/php-di": "^5.4",
+    "adbario/php-dot-notation": "2.0.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~6.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Hyperized\\Benchmark\\": "src/"
+    }
+  }
+}

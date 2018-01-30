@@ -1,0 +1,17 @@
+---
+benchmark:
+  php:
+    enabled: true
+  disk:
+    enabled: true
+    cycles: 100
+  cpu:
+    enabled: true
+    math:
+      count: 99999
+    strings:
+      count: 99999
+    loops:
+      count: 99999
+    ifElse:
+      count: 99999
