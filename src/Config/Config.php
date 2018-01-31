@@ -3,6 +3,7 @@
 namespace Hyperized\Benchmark\Config;
 
 use Adbar\Dot;
+use Hyperized\Benchmark\Generic\Visual;
 use Symfony\Component\Config\FileLocator;
 
 /**
@@ -34,7 +35,6 @@ class Config
 
     /**
      * Config constructor.
-     * @throws \Exception
      */
     public function __construct()
     {
@@ -42,11 +42,15 @@ class Config
             __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . $this->directory
         ]);
 
-        $this->loader = new YamlConfigLoader($this->locator);
+        try {
+            $this->loader = new YamlConfigLoader($this->locator);
 
-        $this->config = $this->loader->load(
-            $this->locator->locate($this->file)
-        );
+            $this->config = $this->loader->load(
+                $this->locator->locate($this->file)
+            );
+        } catch (\Exception $e) {
+            Visual::print($this->file . ' could not be loaded, please copy ' . $this->directory . '/config.yml.example to ' . $this->directory . '/' . $this->file);
+        }
 
         return true;
     }

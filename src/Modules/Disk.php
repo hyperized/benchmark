@@ -97,7 +97,7 @@ class Disk
             }
 
             for ($c = $this->cycles; $c >= 0; $c--) {
-                // Generate files with different blocksizes
+                // Generate files with different block sizes
                 foreach (self::$commonBlockSizesBytes as $bytes) {
                     $prefix = $this->initial . '_' . $bytes;
                     $content = $this->getRandomBytes($bytes);
@@ -108,7 +108,7 @@ class Disk
                     $file = tempnam($this->tmpDirectoryPath, $prefix);
                     file_put_contents($file, $content);
 
-                    // Stop timer & append time to timer array with this blocksize
+                    // Stop timer & append time to timer array with this block size
                     $this->counterFileCreation['Run'][$bytes] += (microtime(true) - $start);
                 }
             }

@@ -2,7 +2,7 @@
 Simple PHP server benchmarking.
 
 This tool can help you determine if a hosting environment is suited for your projects in terms of:
-- PHP.ini setings that affect uploads;
+- PHP.ini settings that affect uploads;
 - CPU speed available to your PHP instance;
 - Disk IOPS available to your PHP instance;
 

@@ -141,14 +141,14 @@ class CPU
     private function render()
     {
         Visual::print('== CPU performance information', "\n");
-        Visual::print('Math operation results by function in milliseconds (less is beter), for a total of ' . $this->mathCount . ' cycles:');
+        Visual::print('Math operation results by function in milliseconds (less is better), for a total of ' . $this->mathCount . ' cycles:');
         new Table($this->mathResults);
         Visual::print(' ', "\n");
-        Visual::print('String operation results by function in milliseconds (less is beter), for a total of ' . $this->stringsCount . ' cycles:');
+        Visual::print('String operation results by function in milliseconds (less is better), for a total of ' . $this->stringsCount . ' cycles:');
         new Table($this->stringsResults);
         Visual::print(' ', "\n");
-        Visual::print('Loop operation results in milliseconds (less is beter), for a total of ' . $this->loopsCount . ' cycles: ' . $this->loopsResults);
-        Visual::print('If/Else operation results in milliseconds (less is beter), for a total of ' . $this->ifElseCount . ' cycles: ' . $this->ifElseResults);
+        Visual::print('Loop operation results in milliseconds (less is better), for a total of ' . $this->loopsCount . ' cycles: ' . $this->loopsResults);
+        Visual::print('If/Else operation results in milliseconds (less is better), for a total of ' . $this->ifElseCount . ' cycles: ' . $this->ifElseResults);
         Visual::print(' ', "\n");
     }
 
