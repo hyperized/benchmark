@@ -7,7 +7,7 @@ This tool can help you determine if a hosting environment is suited for your pro
 - Disk IOPS available to your PHP instance;
 
 ## How to install:
-    composer create-project hyperized/benchmark
+    composer create-project hyperized/benchmark:dev-master
     
 Copy the `/config/config.yml.example` to `/config/config.yml` and adjust to your preferences.
     
