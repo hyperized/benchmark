@@ -8,8 +8,7 @@
     "modules",
     "php"
   ],
-  "minimum-stability": "stable",
-  "license": "MIT",
+  "license": "GPL-3.0-only",
   "authors": [
     {
       "name": "Gerben Geijteman",
