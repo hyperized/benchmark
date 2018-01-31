@@ -1,8 +1,4 @@
-composer.phar
 /vendor/
-/cache/*
 /.idea/
 /config/*.yml
 composer.lock
-clover.xml
-settings.yml

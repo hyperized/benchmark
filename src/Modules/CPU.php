@@ -74,11 +74,11 @@ class CPU
     /**
      * @var array
      */
-    private $loopsResults = [];
+    private $loopsResults;
     /**
      * @var array
      */
-    private $ifElseResults = [];
+    private $ifElseResults;
 
     /**
      * @var
@@ -118,10 +118,10 @@ class CPU
      */
     private function configure()
     {
-        $this->mathCount = !is_null($this->config->get('benchmark.cpu.math.count')) ? $this->config->get('benchmark.cpu.math.count') : static::$defaultCount;
-        $this->stringsCount = !is_null($this->config->get('benchmark.cpu.strings.count')) ? $this->config->get('benchmark.cpu.strings.count') : static::$defaultCount;
-        $this->loopsCount = !is_null($this->config->get('benchmark.cpu.loops.count')) ? $this->config->get('benchmark.cpu.loops.count') : static::$defaultCount;
-        $this->ifElseCount = !is_null($this->config->get('benchmark.cpu.ifElse.count')) ? $this->config->get('benchmark.cpu.ifElse.count') : static::$defaultCount;
+        $this->mathCount = !is_null($this->config->get('benchmark.cpu.math.count')) ? $this->config->get('benchmark.cpu.math.count') : self::$defaultCount;
+        $this->stringsCount = !is_null($this->config->get('benchmark.cpu.strings.count')) ? $this->config->get('benchmark.cpu.strings.count') : self::$defaultCount;
+        $this->loopsCount = !is_null($this->config->get('benchmark.cpu.loops.count')) ? $this->config->get('benchmark.cpu.loops.count') : self::$defaultCount;
+        $this->ifElseCount = !is_null($this->config->get('benchmark.cpu.ifElse.count')) ? $this->config->get('benchmark.cpu.ifElse.count') : self::$defaultCount;
     }
 
     /**
@@ -157,7 +157,7 @@ class CPU
      */
     private function math()
     {
-        foreach (static::$mathFunctions as $function) {
+        foreach (self::$mathFunctions as $function) {
             $this->mathResults['x'][$function] = 0;
             $start = microtime(true);
 
@@ -174,12 +174,12 @@ class CPU
      */
     private function strings()
     {
-        foreach (static::$stringFunctions as $function) {
+        foreach (self::$stringFunctions as $function) {
             $this->stringsResults['x'][$function] = 0;
             $start = microtime(true);
 
             for ($i = 0; $i < $this->stringsCount; $i++) {
-                call_user_func_array($function, array(static::$string));
+                call_user_func_array($function, array(self::$string));
             }
 
             $this->stringsResults['x'][$function] += (microtime(true) - $start);

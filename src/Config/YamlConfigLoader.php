@@ -12,9 +12,10 @@ use Symfony\Component\Yaml\Yaml;
 class YamlConfigLoader extends FileLoader
 {
     /**
-     * @param mixed $resource
-     * @param null  $type
+     * @param mixed       $resource The resource
+     * @param string|null $type     The resource type or null if unknown
      *
+     * @throws \Exception If something went wrong
      * @return mixed
      */
     public function load($resource, $type = null)
@@ -24,8 +25,8 @@ class YamlConfigLoader extends FileLoader
     }
 
     /**
-     * @param mixed $resource
-     * @param null  $type
+     * @param mixed       $resource A resource
+     * @param string|null $type     The resource type or null if unknown
      *
      * @return bool
      */

@@ -109,7 +109,7 @@ class PHP
         {
             return $_SERVER['SERVER_SOFTWARE'];
         }
-        return false;
+        return 'Probably CLI';
     }
 
     /**

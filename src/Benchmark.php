@@ -21,8 +21,16 @@ class Benchmark
      * @param \Hyperized\Benchmark\Modules\Disk  $disk
      * @param \Hyperized\Benchmark\Modules\CPU   $cpu
      */
-    public function __construct(Config $config, PHP $php, Disk $disk, CPU $cpu)
-    {
+    public function __construct(
+        /** @scrutinizer ignore-unused */
+        Config $config,
+        /** @scrutinizer ignore-unused */
+        PHP $php,
+        /** @scrutinizer ignore-unused */
+        Disk $disk,
+        /** @scrutinizer ignore-unused */
+        CPU $cpu
+    ) {
         // Autowired via PHP DI
     }
 }

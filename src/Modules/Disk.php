@@ -57,6 +57,8 @@ class Disk
 
     /**
      * Disk constructor.
+     *
+     * @param \Hyperized\Benchmark\Config\Config $config
      */
     public function __construct(Config $config)
     {
@@ -84,19 +86,19 @@ class Disk
     private function run()
     {
         $this->initial = time();
-        $this->tmpDirectoryPath = realpath(static::$path) . static::$tmpDirectory;
+        $this->tmpDirectoryPath = realpath(self::$path) . self::$tmpDirectory;
 
         try {
             // Create subdirectory
             Directory::create($this->tmpDirectoryPath);
 
-            foreach (static::$commonBlockSizesBytes as $bytes) {
+            foreach (self::$commonBlockSizesBytes as $bytes) {
                 $this->counterFileCreation['Run'][$bytes] = 0;
             }
 
             for ($c = $this->cycles; $c >= 0; $c--) {
                 // Generate files with different blocksizes
-                foreach (static::$commonBlockSizesBytes as $bytes) {
+                foreach (self::$commonBlockSizesBytes as $bytes) {
                     $prefix = $this->initial . '_' . $bytes;
                     $content = $this->getRandomBytes($bytes);
 

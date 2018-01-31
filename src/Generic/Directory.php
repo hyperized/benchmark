@@ -27,17 +27,19 @@ class Directory
     public static function removeRecursively($path) {
         if (file_exists($path)) {
             $dir = opendir($path);
-            while (false !== ($file = readdir($dir))) {
-                if (($file != static::$rootPath) && ($file != static::$parentPath)) {
-                    $full = $path . DIRECTORY_SEPARATOR . $file;
-                    if (is_dir($full)) {
-                        Directory::removeRecursively($full);
-                    } else {
-                        unlink($full);
+            if(is_resource($dir)) {
+                while (false !== ($file = readdir($dir))) {
+                    if (($file != self::$rootPath) && ($file != self::$parentPath)) {
+                        $full = $path . DIRECTORY_SEPARATOR . $file;
+                        if (is_dir($full)) {
+                            Directory::removeRecursively($full);
+                        } else {
+                            unlink($full);
+                        }
                     }
                 }
+                closedir($dir);
             }
-            closedir($dir);
             rmdir($path);
         }
     }
