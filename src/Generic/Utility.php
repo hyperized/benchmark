@@ -13,7 +13,7 @@ class Utility
      * https://stackoverflow.com/a/17372566/1757763
      * @return mixed
      */
-    static function format(string $string, array $variables)
+    public static function format(string $string, array $variables)
     {
         $string = \preg_replace_callback('#\{\}#', function () {
             static $i = 0;

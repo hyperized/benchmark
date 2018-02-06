@@ -64,7 +64,7 @@ class Table
     /**
      * @param array $tableArray
      */
-    function __construct(array $tableArray)
+    public function __construct(array $tableArray)
     {
         $this->tableArray = $tableArray;
         $this->columnHeaders = $this->columnHeaders($this->tableArray);
