@@ -82,15 +82,15 @@ class Table
     private function render()
     {
         echo $this->rowSeparator . static::$newLine;
-        echo str_repeat($this->rowSpacer . static::$newLine, static::$spacingY);
+        echo \str_repeat($this->rowSpacer . static::$newLine, static::$spacingY);
         echo $this->rowHeaders . static::$newLine;
-        echo str_repeat($this->rowSpacer . static::$newLine, static::$spacingY);
+        echo \str_repeat($this->rowSpacer . static::$newLine, static::$spacingY);
         echo $this->rowSeparator . static::$newLine;
-        echo str_repeat($this->rowSpacer . static::$newLine, static::$spacingY);
+        echo \str_repeat($this->rowSpacer . static::$newLine, static::$spacingY);
         foreach ($this->tableArray as $rowCells) {
             $rowCells = $this->rowCells($rowCells, $this->columnHeaders, $this->columnLength);
             echo $rowCells . static::$newLine;
-            echo str_repeat($this->rowSpacer . static::$newLine, static::$spacingY);
+            echo \str_repeat($this->rowSpacer . static::$newLine, static::$spacingY);
         }
         echo $this->rowSeparator . static::$newLine;
     }
@@ -102,7 +102,7 @@ class Table
      */
     private function columnHeaders($table)
     {
-        return array_keys(reset($table));
+        return \array_keys(\reset($table));
     }
 
     /**
@@ -115,10 +115,10 @@ class Table
     {
         $lengths = [];
         foreach ($columnHeaders as $header) {
-            $header_length = strlen($header);
+            $header_length = \strlen($header);
             $max = $header_length;
             foreach ($table as $row) {
-                $length = strlen($row[$header]);
+                $length = \strlen($row[$header]);
                 if ($length > $max) {
                     $max = $length;
                 }
@@ -143,7 +143,7 @@ class Table
     {
         $row = '';
         foreach ($columnLengths as $columnLength) {
-            $row .= static::$jointCharacter . str_repeat(static::$lineXCharacter,
+            $row .= static::$jointCharacter . \str_repeat(static::$lineXCharacter,
                     (static::$spacingX * 2) + $columnLength);
         }
         $row .= static::$jointCharacter;
@@ -160,7 +160,7 @@ class Table
     {
         $row = '';
         foreach ($columnLengths as $columnLength) {
-            $row .= static::$lineYCharacter . str_repeat(' ', (static::$spacingX * 2) + $columnLength);
+            $row .= static::$lineYCharacter . \str_repeat(' ', (static::$spacingX * 2) + $columnLength);
         }
         $row .= static::$lineYCharacter;
 
@@ -177,7 +177,7 @@ class Table
     {
         $row = '';
         foreach ($columnHeaders as $header) {
-            $row .= static::$lineYCharacter . str_pad($header, (static::$spacingX * 2) + $columnLengths[$header], ' ',
+            $row .= static::$lineYCharacter . \str_pad($header, (static::$spacingX * 2) + $columnLengths[$header], ' ',
                     STR_PAD_BOTH);
         }
         $row .= static::$lineYCharacter;
@@ -196,7 +196,7 @@ class Table
     {
         $row = '';
         foreach ($columnHeaders as $header) {
-            $row .= static::$lineYCharacter . str_repeat(' ', static::$spacingX) . str_pad($rowCells[$header],
+            $row .= static::$lineYCharacter . \str_repeat(' ', static::$spacingX) . \str_pad($rowCells[$header],
                     static::$spacingX + $columnLengths[$header], ' ', STR_PAD_RIGHT);
         }
         $row .= static::$lineYCharacter;

@@ -16,6 +16,6 @@ class Visual
      */
     static function print(string $input, $delimiter = "\n\n")
     {
-        print_r($input . $delimiter);
+        \print_r($input . $delimiter);
     }
 }

@@ -46,8 +46,8 @@ class Size
      */
     public static function bytesToFormat(int $bytes): string
     {
-        $power = $bytes > 0 ? floor(log($bytes, 1024)) : 0;
-        return number_format($bytes / pow(1024, $power), 2, '.', ',') . ' ' . self::$units[$power];
+        $power = $bytes > 0 ? \floor(\log($bytes, 1024)) : 0;
+        return \number_format($bytes / \pow(1024, $power), 2, '.', ',') . ' ' . self::$units[$power];
     }
 
     /**
@@ -59,8 +59,8 @@ class Size
      */
     public static function formatToBytes(string $format): float
     {
-        $unit = preg_replace(self::$unitsRegexPattern, '', $format);
-        $format = preg_replace(self::$numberRegex, '', $format);
-        return $unit ? round($format * pow(1024, stripos(self::$unitsPattern, $unit[0]))) : round($format);
+        $unit = \preg_replace(self::$unitsRegexPattern, '', $format);
+        $format = \preg_replace(self::$numberRegex, '', $format);
+        return $unit ? \round($format * \pow(1024, \stripos(self::$unitsPattern, $unit[0]))) : \round($format);
     }
 }

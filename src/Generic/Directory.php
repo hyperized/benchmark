@@ -25,22 +25,22 @@ class Directory
      * http://php.net/manual/en/function.rmdir.php#119949
      */
     public static function removeRecursively($path) {
-        if (file_exists($path)) {
-            $dir = opendir($path);
-            if(is_resource($dir)) {
-                while (false !== ($file = readdir($dir))) {
+        if (\file_exists($path)) {
+            $dir = \opendir($path);
+            if(\is_resource($dir)) {
+                while (false !== ($file = \readdir($dir))) {
                     if (($file != self::$rootPath) && ($file != self::$parentPath)) {
                         $full = $path . DIRECTORY_SEPARATOR . $file;
-                        if (is_dir($full)) {
+                        if (\is_dir($full)) {
                             Directory::removeRecursively($full);
                         } else {
-                            unlink($full);
+                            \unlink($full);
                         }
                     }
                 }
-                closedir($dir);
+                \closedir($dir);
             }
-            rmdir($path);
+            \rmdir($path);
         }
     }
 
@@ -53,9 +53,9 @@ class Directory
      */
     public static function create($path, $permissions = 0755): bool
     {
-        if(!file_exists($path))
+        if(!\file_exists($path))
         {
-            if (!mkdir($path, $permissions)) {
+            if (!\mkdir($path, $permissions)) {
                 throw new \Exception('Could not create directory: ' . $path);
             }
         }

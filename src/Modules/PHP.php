@@ -85,11 +85,11 @@ class PHP
      */
     private function getVersion($extension = null): string
     {
-        if(!is_null($extension))
+        if(!\is_null($extension))
         {
-            return phpversion($extension);
+            return \phpversion($extension);
         }
-        return phpversion();
+        return \phpversion();
     }
 
     /**
@@ -97,7 +97,7 @@ class PHP
      */
     private function getExtensions(): array
     {
-        return get_loaded_extensions();
+        return \get_loaded_extensions();
     }
 
     /**
@@ -117,7 +117,7 @@ class PHP
      */
     private function getMaximumExecutionTime(): string
     {
-        return ini_get('max_execution_time');
+        return \ini_get('max_execution_time');
     }
 
     /**
@@ -131,14 +131,14 @@ class PHP
 
         if ($max_size < 0) {
             // Start with post_max_size.
-            $post_max_size = Size::formatToBytes(ini_get('post_max_size'));
+            $post_max_size = Size::formatToBytes(\ini_get('post_max_size'));
             if ($post_max_size > 0) {
                 $max_size = $post_max_size;
             }
 
             // If upload_max_size is less, then reduce. Except if upload_max_size is
             // zero, which indicates no limit.
-            $upload_max = Size::formatToBytes(ini_get('upload_max_filesize'));
+            $upload_max = Size::formatToBytes(\ini_get('upload_max_filesize'));
             if ($upload_max > 0 && $upload_max < $max_size) {
                 $max_size = $upload_max;
             }
@@ -151,6 +151,6 @@ class PHP
      */
     private function getMaxMemoryBytes(): int
     {
-        return Size::formatToBytes(ini_get('memory_limit'));
+        return Size::formatToBytes(\ini_get('memory_limit'));
     }
 }
