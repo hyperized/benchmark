@@ -118,10 +118,10 @@ class CPU
      */
     private function configure()
     {
-        $this->mathCount = !is_null($this->config->get('benchmark.cpu.math.count')) ? $this->config->get('benchmark.cpu.math.count') : self::$defaultCount;
-        $this->stringsCount = !is_null($this->config->get('benchmark.cpu.strings.count')) ? $this->config->get('benchmark.cpu.strings.count') : self::$defaultCount;
-        $this->loopsCount = !is_null($this->config->get('benchmark.cpu.loops.count')) ? $this->config->get('benchmark.cpu.loops.count') : self::$defaultCount;
-        $this->ifElseCount = !is_null($this->config->get('benchmark.cpu.ifElse.count')) ? $this->config->get('benchmark.cpu.ifElse.count') : self::$defaultCount;
+        $this->mathCount = !\is_null($this->config->get('benchmark.cpu.math.count')) ? $this->config->get('benchmark.cpu.math.count') : self::$defaultCount;
+        $this->stringsCount = !\is_null($this->config->get('benchmark.cpu.strings.count')) ? $this->config->get('benchmark.cpu.strings.count') : self::$defaultCount;
+        $this->loopsCount = !\is_null($this->config->get('benchmark.cpu.loops.count')) ? $this->config->get('benchmark.cpu.loops.count') : self::$defaultCount;
+        $this->ifElseCount = !\is_null($this->config->get('benchmark.cpu.ifElse.count')) ? $this->config->get('benchmark.cpu.ifElse.count') : self::$defaultCount;
     }
 
     /**
@@ -159,13 +159,13 @@ class CPU
     {
         foreach (self::$mathFunctions as $function) {
             $this->mathResults['x'][$function] = 0;
-            $start = microtime(true);
+            $start = \microtime(true);
 
             for ($i = 0; $i < $this->mathCount; $i++) {
-                call_user_func_array($function, array($i));
+                \call_user_func_array($function, array($i));
             }
 
-            $this->mathResults['x'][$function] += (microtime(true) - $start);
+            $this->mathResults['x'][$function] += (\microtime(true) - $start);
         }
     }
 
@@ -176,13 +176,13 @@ class CPU
     {
         foreach (self::$stringFunctions as $function) {
             $this->stringsResults['x'][$function] = 0;
-            $start = microtime(true);
+            $start = \microtime(true);
 
             for ($i = 0; $i < $this->stringsCount; $i++) {
-                call_user_func_array($function, array(self::$string));
+                \call_user_func_array($function, array(self::$string));
             }
 
-            $this->stringsResults['x'][$function] += (microtime(true) - $start);
+            $this->stringsResults['x'][$function] += (\microtime(true) - $start);
         }
     }
 
@@ -191,7 +191,7 @@ class CPU
      */
     private function loops()
     {
-        $start = microtime(true);
+        $start = \microtime(true);
 
         /** @noinspection PhpStatementHasEmptyBodyInspection */
         for ($i = 0; $i < $this->loopsCount; ++$i) {
@@ -202,7 +202,7 @@ class CPU
             ++$i;
         }
 
-        $this->loopsResults = (microtime(true) - $start);
+        $this->loopsResults = (\microtime(true) - $start);
     }
 
     /**
@@ -210,7 +210,7 @@ class CPU
      */
     private function ifElse()
     {
-        $start = microtime(true);
+        $start = \microtime(true);
 
         for ($i = 0; $i < $this->ifElseCount; $i++) {
             if ($i == -1) {
@@ -225,6 +225,6 @@ class CPU
             }
         }
 
-        $this->ifElseResults = (microtime(true) - $start);
+        $this->ifElseResults = (\microtime(true) - $start);
     }
 }

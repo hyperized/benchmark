@@ -19,7 +19,7 @@ class YamlConfigLoader extends FileLoader
      */
     public function load($resource, $type = null)
     {
-        $configValues = Yaml::parse(file_get_contents($resource));
+        $configValues = Yaml::parse(\file_get_contents($resource));
         return $configValues;
     }
 
@@ -31,7 +31,7 @@ class YamlConfigLoader extends FileLoader
      */
     public function supports($resource, $type = null)
     {
-        return is_string($resource) && 'yml' === pathinfo(
+        return \is_string($resource) && 'yml' === \pathinfo(
                 $resource,
                 PATHINFO_EXTENSION
             );

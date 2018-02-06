@@ -15,3 +15,11 @@ benchmark:
       count: 99999
     ifElse:
       count: 99999
+  mysql:
+    enabled: true
+    count: 1000000
+    hostname: localhost
+    port: 3306
+    username: myuser
+    password: mypassword
+    database: mydatabase

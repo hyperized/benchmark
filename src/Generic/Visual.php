@@ -14,8 +14,8 @@ class Visual
      * @param string $input
      * @param string $delimiter
      */
-    static function print(string $input, $delimiter = "\n\n")
+    public static function print(string $input, $delimiter = "\n\n")
     {
-        print_r($input . $delimiter);
+        \print_r($input . $delimiter);
     }
 }

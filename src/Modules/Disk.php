@@ -85,8 +85,8 @@ class Disk
      */
     private function run()
     {
-        $this->initial = time();
-        $this->tmpDirectoryPath = realpath(self::$path) . self::$tmpDirectory;
+        $this->initial = \time();
+        $this->tmpDirectoryPath = \realpath(self::$path) . self::$tmpDirectory;
 
         try {
             // Create subdirectory
@@ -103,13 +103,13 @@ class Disk
                     $content = $this->getRandomBytes($bytes);
 
                     // Start the timer (measure only disk interaction, not string generation etc)
-                    $start = microtime(true);
+                    $start = \microtime(true);
 
-                    $file = tempnam($this->tmpDirectoryPath, $prefix);
-                    file_put_contents($file, $content);
+                    $file = \tempnam($this->tmpDirectoryPath, $prefix);
+                    \file_put_contents($file, $content);
 
                     // Stop timer & append time to timer array with this block size
-                    $this->counterFileCreation['Run'][$bytes] += (microtime(true) - $start);
+                    $this->counterFileCreation['Run'][$bytes] += (\microtime(true) - $start);
                 }
             }
 

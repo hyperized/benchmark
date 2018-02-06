@@ -9,9 +9,9 @@ echo '<pre>';
 try {
     $benchmark = $container->get('\Hyperized\Benchmark\Benchmark');
 } catch (\DI\DependencyException $e) {
-    print_r($e);
+    \print_r($e);
 } catch (\DI\NotFoundException $e) {
-    print_r($e);
+    \print_r($e);
 }
 echo '</pre>';
 

@@ -5,6 +5,7 @@ This tool can help you determine if a hosting environment is suited for your pro
 - PHP.ini settings that affect uploads;
 - CPU speed available to your PHP instance;
 - Disk IOPS available to your PHP instance;
+- MySQL query speed;
 
 ## How to install:
     composer create-project hyperized/benchmark:dev-master
@@ -22,6 +23,15 @@ Copy the `/config/config.yml.example` to `/config/config.yml` and adjust to your
     
 ### Remotely
 Install on the server by running composer and visiting the `/benchmark.php` page of the directory the project is installed at.
+
+### Security
+Note that you might want to add additional security to your server to not expose the config.yml file to your webtraffic.
+
+For Apache with `mod_rewrite` you can use something like this in your `.htaccess` file:
+
+    <Files "config.yml">
+        deny from all
+    </Files>
 
 ## Contribution
 I'm open to improvements and new benchmarks via [pull requests](https://github.com/hyperized/benchmark/pulls)
