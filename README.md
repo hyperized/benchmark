@@ -1,4 +1,6 @@
 # PHP benchmark
+[![Build Status](https://scrutinizer-ci.com/g/hyperized/benchmark/badges/build.png?b=master)](https://scrutinizer-ci.com/g/hyperized/benchmark/build-status/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/hyperized/benchmark/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/hyperized/benchmark/?branch=master)
+
 Simple PHP server benchmarking.
 
 This tool can help you determine if a hosting environment is suited for your projects in terms of:
