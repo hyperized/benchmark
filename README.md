@@ -1,5 +1,6 @@
 # PHP benchmark
 [![Build Status](https://scrutinizer-ci.com/g/hyperized/benchmark/badges/build.png?b=master)](https://scrutinizer-ci.com/g/hyperized/benchmark/build-status/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/hyperized/benchmark/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/hyperized/benchmark/?branch=master)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fhyperized%2Fbenchmark.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fhyperized%2Fbenchmark?ref=badge_shield)
 
 Simple PHP server benchmarking.
 
@@ -48,3 +49,7 @@ Credit where credit is due:
 - https://gist.github.com/RamadhanAmizudin/ca87f7be83c6237bb070
 - https://stackoverflow.com/a/25370978/1757763
 - http://php.net/manual/en/function.rmdir.php#119949
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fhyperized%2Fbenchmark.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fhyperized%2Fbenchmark?ref=badge_large)
