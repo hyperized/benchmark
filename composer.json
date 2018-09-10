@@ -19,7 +19,7 @@
     "roave/security-advisories": "dev-master",
     "php": ">=7.1",
     "symfony/config": "^3.3",
-    "symfony/yaml": "^3.3",
+    "symfony/yaml": "^4.1",
     "php-di/php-di": "^5.4",
     "adbario/php-dot-notation": "2.1.0",
     "ext-mysqli": "^7.1"
