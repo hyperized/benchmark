@@ -23,10 +23,6 @@ class MySQL
     /**
      * @var string
      */
-    private $versionQuery = 'SELECT VERSION() as version;';
-    /**
-     * @var string
-     */
     private $benchmarkQuery = 'SELECT BENCHMARK({},ENCODE(\'{}\',RAND()));';
     /**
      * @var string
