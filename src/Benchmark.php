@@ -17,10 +17,11 @@ class Benchmark
     /**
      * Benchmark constructor.
      *
-     * @param \Hyperized\Benchmark\Config\Config $config
-     * @param \Hyperized\Benchmark\Modules\PHP   $php
-     * @param \Hyperized\Benchmark\Modules\Disk  $disk
-     * @param \Hyperized\Benchmark\Modules\CPU   $cpu
+     * @param Config $config
+     * @param PHP $php
+     * @param Disk $disk
+     * @param CPU $cpu
+     * @param MySQL $mysql
      */
     public function __construct(
         /** @scrutinizer ignore-unused */
@@ -33,7 +34,8 @@ class Benchmark
         CPU $cpu,
         /** @scrutinizer ignore-unused */
         MySQL $mysql
-    ) {
+    )
+    {
         // Autowired via PHP DI
     }
 }

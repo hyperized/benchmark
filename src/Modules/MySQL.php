@@ -43,6 +43,7 @@ class MySQL
 
     /**
      * MySQL constructor.
+     *
      * @param Config $config
      */
     public function __construct(Config $config)
@@ -59,7 +60,7 @@ class MySQL
     /**
      * Configure
      */
-    private function configure()
+    private function configure(): void
     {
         $this->connection = \mysqli_connect(
             $this->config->get('benchmark.mysql.hostname'),
@@ -72,26 +73,16 @@ class MySQL
     /**
      * Run
      */
-    private function run()
+    private function run(): void
     {
         $this->getVersion();
         $this->encodeRand();
     }
 
     /**
-     * Render
-     */
-    private function render()
-    {
-        Visual::print('== MySQL performance information', "\n");
-        Visual::print('MySQL version: ' . $this->version, "\n");
-        Visual::print('Query (Encode + random) operation results in milliseconds (less is better), for a total of ' . $this->config->get('benchmark.mysql.count') . ' cycles: ' . $this->queryResults);
-    }
-
-    /**
      * Obtain MySQL version
      */
-    private function getVersion()
+    private function getVersion(): void
     {
         $this->version = \mysqli_fetch_object(\mysqli_query($this->connection, $this->versionQuery))->version;
     }
@@ -99,7 +90,8 @@ class MySQL
     /**
      * Run encode with Random query
      */
-    private function encodeRand() {
+    private function encodeRand(): void
+    {
         $query = Utility::format($this->benchmarkQuery, [
             $this->config->get('benchmark.mysql.count'),
             $this->benchmarkText
@@ -111,5 +103,15 @@ class MySQL
 
         $this->queryResults = (\microtime(true) - $start);
 
+    }
+
+    /**
+     * Render
+     */
+    private function render(): void
+    {
+        Visual::print('== MySQL performance information', "\n");
+        Visual::print('MySQL version: ' . $this->version, "\n");
+        Visual::print('Query (Encode + random) operation results in milliseconds (less is better), for a total of ' . $this->config->get('benchmark.mysql.count') . ' cycles: ' . $this->queryResults);
     }
 }

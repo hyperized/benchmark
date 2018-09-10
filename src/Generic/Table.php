@@ -3,10 +3,11 @@
 
 namespace Hyperized\Benchmark\Generic;
 
-// Source from: https://gist.github.com/RamadhanAmizudin/ca87f7be83c6237bb070
-
 /**
  * Class Table
+ *
+ * Source from: https://gist.github.com/RamadhanAmizudin/ca87f7be83c6237bb070
+ *
  * @package Hyperized\Benchmark\Generic
  */
 class Table
@@ -14,27 +15,27 @@ class Table
     /**
      * @var int
      */
-    static $spacingX = 1;
+    private static $spacingX = 1;
     /**
      * @var int
      */
-    static $spacingY = 0;
+    private static $spacingY = 0;
     /**
      * @var string
      */
-    static $jointCharacter = '+';
+    private static $jointCharacter = '+';
     /**
      * @var string
      */
-    static $lineXCharacter = '-';
+    private static $lineXCharacter = '-';
     /**
      * @var string
      */
-    static $lineYCharacter = '|';
+    private static $lineYCharacter = '|';
     /**
      * @var string
      */
-    static $newLine = "\n";
+    private static $newLine = "\n";
 
     /**
      * @var
@@ -77,30 +78,11 @@ class Table
     }
 
     /**
-     *
-     */
-    private function render()
-    {
-        echo $this->rowSeparator . static::$newLine;
-        echo \str_repeat($this->rowSpacer . static::$newLine, static::$spacingY);
-        echo $this->rowHeaders . static::$newLine;
-        echo \str_repeat($this->rowSpacer . static::$newLine, static::$spacingY);
-        echo $this->rowSeparator . static::$newLine;
-        echo \str_repeat($this->rowSpacer . static::$newLine, static::$spacingY);
-        foreach ($this->tableArray as $rowCells) {
-            $rowCells = $this->rowCells($rowCells, $this->columnHeaders, $this->columnLength);
-            echo $rowCells . static::$newLine;
-            echo \str_repeat($this->rowSpacer . static::$newLine, static::$spacingY);
-        }
-        echo $this->rowSeparator . static::$newLine;
-    }
-
-    /**
      * @param $table
      *
      * @return array
      */
-    private function columnHeaders($table)
+    private function columnHeaders($table): array
     {
         return \array_keys(\reset($table));
     }
@@ -111,7 +93,7 @@ class Table
      *
      * @return array
      */
-    private function columnLengths($table, $columnHeaders)
+    private function columnLengths($table, $columnHeaders): array
     {
         $lengths = [];
         foreach ($columnHeaders as $header) {
@@ -124,8 +106,8 @@ class Table
                 }
             }
 
-            if (($max % 2) != ($header_length % 2)) {
-                $max += 1;
+            if (($max % 2) !== ($header_length % 2)) {
+                ++$max;
             }
 
             $lengths[$header] = $max;
@@ -139,14 +121,14 @@ class Table
      *
      * @return string
      */
-    private function rowSeparator($columnLengths)
+    private function rowSeparator($columnLengths): string
     {
         $row = '';
         foreach ($columnLengths as $columnLength) {
-            $row .= static::$jointCharacter . \str_repeat(static::$lineXCharacter,
-                    (static::$spacingX * 2) + $columnLength);
+            $row .= self::$jointCharacter . \str_repeat(self::$lineXCharacter,
+                    (self::$spacingX * 2) + $columnLength);
         }
-        $row .= static::$jointCharacter;
+        $row .= self::$jointCharacter;
 
         return $row;
     }
@@ -156,13 +138,13 @@ class Table
      *
      * @return string
      */
-    private function rowSpacer($columnLengths)
+    private function rowSpacer($columnLengths): string
     {
         $row = '';
         foreach ($columnLengths as $columnLength) {
-            $row .= static::$lineYCharacter . \str_repeat(' ', (static::$spacingX * 2) + $columnLength);
+            $row .= self::$lineYCharacter . \str_repeat(' ', (self::$spacingX * 2) + $columnLength);
         }
-        $row .= static::$lineYCharacter;
+        $row .= self::$lineYCharacter;
 
         return $row;
     }
@@ -173,16 +155,35 @@ class Table
      *
      * @return string
      */
-    private function rowHeaders($columnHeaders, $columnLengths)
+    private function rowHeaders($columnHeaders, $columnLengths): string
     {
         $row = '';
         foreach ($columnHeaders as $header) {
-            $row .= static::$lineYCharacter . \str_pad($header, (static::$spacingX * 2) + $columnLengths[$header], ' ',
+            $row .= self::$lineYCharacter . \str_pad($header, (self::$spacingX * 2) + $columnLengths[$header], ' ',
                     STR_PAD_BOTH);
         }
-        $row .= static::$lineYCharacter;
+        $row .= self::$lineYCharacter;
 
         return $row;
+    }
+
+    /**
+     *
+     */
+    private function render(): void
+    {
+        echo $this->rowSeparator . self::$newLine;
+        echo \str_repeat($this->rowSpacer . self::$newLine, self::$spacingY);
+        echo $this->rowHeaders . self::$newLine;
+        echo \str_repeat($this->rowSpacer . self::$newLine, self::$spacingY);
+        echo $this->rowSeparator . self::$newLine;
+        echo \str_repeat($this->rowSpacer . self::$newLine, self::$spacingY);
+        foreach ($this->tableArray as $rowCells) {
+            $rowCells = $this->rowCells($rowCells, $this->columnHeaders, $this->columnLength);
+            echo $rowCells . self::$newLine;
+            echo \str_repeat($this->rowSpacer . self::$newLine, self::$spacingY);
+        }
+        echo $this->rowSeparator . self::$newLine;
     }
 
     /**
@@ -192,14 +193,14 @@ class Table
      *
      * @return string
      */
-    private function rowCells($rowCells, $columnHeaders, $columnLengths)
+    private function rowCells($rowCells, $columnHeaders, $columnLengths): string
     {
         $row = '';
         foreach ($columnHeaders as $header) {
-            $row .= static::$lineYCharacter . \str_repeat(' ', static::$spacingX) . \str_pad($rowCells[$header],
-                    static::$spacingX + $columnLengths[$header], ' ', STR_PAD_RIGHT);
+            $row .= self::$lineYCharacter . \str_repeat(' ', self::$spacingX) . \str_pad($rowCells[$header],
+                    self::$spacingX + $columnLengths[$header], ' ', STR_PAD_RIGHT);
         }
-        $row .= static::$lineYCharacter;
+        $row .= self::$lineYCharacter;
 
         return $row;
     }
