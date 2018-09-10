@@ -97,7 +97,7 @@ class PHP
      */
     private function getMaxMemoryBytes(): int
     {
-        return Size::formatToBytes(\ini_get('memory_limit'));
+        return (int)Size::formatToBytes(\ini_get('memory_limit'));
     }
 
     /**
