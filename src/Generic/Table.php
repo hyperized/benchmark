@@ -78,25 +78,6 @@ class Table
     }
 
     /**
-     *
-     */
-    private function render(): void
-    {
-        echo $this->rowSeparator . static::$newLine;
-        echo \str_repeat($this->rowSpacer . static::$newLine, static::$spacingY);
-        echo $this->rowHeaders . static::$newLine;
-        echo \str_repeat($this->rowSpacer . static::$newLine, static::$spacingY);
-        echo $this->rowSeparator . static::$newLine;
-        echo \str_repeat($this->rowSpacer . static::$newLine, static::$spacingY);
-        foreach ($this->tableArray as $rowCells) {
-            $rowCells = $this->rowCells($rowCells, $this->columnHeaders, $this->columnLength);
-            echo $rowCells . static::$newLine;
-            echo \str_repeat($this->rowSpacer . static::$newLine, static::$spacingY);
-        }
-        echo $this->rowSeparator . static::$newLine;
-    }
-
-    /**
      * @param $table
      *
      * @return array
@@ -144,10 +125,10 @@ class Table
     {
         $row = '';
         foreach ($columnLengths as $columnLength) {
-            $row .= static::$jointCharacter . \str_repeat(static::$lineXCharacter,
-                    (static::$spacingX * 2) + $columnLength);
+            $row .= self::$jointCharacter . \str_repeat(self::$lineXCharacter,
+                    (self::$spacingX * 2) + $columnLength);
         }
-        $row .= static::$jointCharacter;
+        $row .= self::$jointCharacter;
 
         return $row;
     }
@@ -161,9 +142,9 @@ class Table
     {
         $row = '';
         foreach ($columnLengths as $columnLength) {
-            $row .= static::$lineYCharacter . \str_repeat(' ', (static::$spacingX * 2) + $columnLength);
+            $row .= self::$lineYCharacter . \str_repeat(' ', (self::$spacingX * 2) + $columnLength);
         }
-        $row .= static::$lineYCharacter;
+        $row .= self::$lineYCharacter;
 
         return $row;
     }
@@ -178,12 +159,31 @@ class Table
     {
         $row = '';
         foreach ($columnHeaders as $header) {
-            $row .= static::$lineYCharacter . \str_pad($header, (static::$spacingX * 2) + $columnLengths[$header], ' ',
+            $row .= self::$lineYCharacter . \str_pad($header, (self::$spacingX * 2) + $columnLengths[$header], ' ',
                     STR_PAD_BOTH);
         }
-        $row .= static::$lineYCharacter;
+        $row .= self::$lineYCharacter;
 
         return $row;
+    }
+
+    /**
+     *
+     */
+    private function render(): void
+    {
+        echo $this->rowSeparator . self::$newLine;
+        echo \str_repeat($this->rowSpacer . self::$newLine, self::$spacingY);
+        echo $this->rowHeaders . self::$newLine;
+        echo \str_repeat($this->rowSpacer . self::$newLine, self::$spacingY);
+        echo $this->rowSeparator . self::$newLine;
+        echo \str_repeat($this->rowSpacer . self::$newLine, self::$spacingY);
+        foreach ($this->tableArray as $rowCells) {
+            $rowCells = $this->rowCells($rowCells, $this->columnHeaders, $this->columnLength);
+            echo $rowCells . self::$newLine;
+            echo \str_repeat($this->rowSpacer . self::$newLine, self::$spacingY);
+        }
+        echo $this->rowSeparator . self::$newLine;
     }
 
     /**
@@ -197,10 +197,10 @@ class Table
     {
         $row = '';
         foreach ($columnHeaders as $header) {
-            $row .= static::$lineYCharacter . \str_repeat(' ', static::$spacingX) . \str_pad($rowCells[$header],
-                    static::$spacingX + $columnLengths[$header], ' ', STR_PAD_RIGHT);
+            $row .= self::$lineYCharacter . \str_repeat(' ', self::$spacingX) . \str_pad($rowCells[$header],
+                    self::$spacingX + $columnLengths[$header], ' ', STR_PAD_RIGHT);
         }
-        $row .= static::$lineYCharacter;
+        $row .= self::$lineYCharacter;
 
         return $row;
     }

@@ -12,8 +12,8 @@ use Symfony\Component\Yaml\Yaml;
 class YamlConfigLoader extends FileLoader
 {
     /**
-     * @param mixed       $resource The resource
-     * @param string|null $type     The resource type or null if unknown
+     * @param mixed $resource   The resource
+     * @param string|null $type The resource type or null if unknown
      *
      * @return mixed
      */
@@ -23,8 +23,8 @@ class YamlConfigLoader extends FileLoader
     }
 
     /**
-     * @param mixed       $resource A resource
-     * @param string|null $type     The resource type or null if unknown
+     * @param mixed $resource   A resource
+     * @param string|null $type The resource type or null if unknown
      *
      * @return bool
      */

@@ -41,8 +41,7 @@ class PHP
      */
     public function __construct(Config $config)
     {
-        if($config->get('benchmark.php.enabled'))
-        {
+        if ($config->get('benchmark.php.enabled')) {
             $this->run();
             $this->render();
         }
@@ -60,64 +59,11 @@ class PHP
     }
 
     /**
-     * Gives output
-     */
-    private function render(): void
-    {
-        Visual::print('== Generic PHP information');
-        Visual::print('PHP version: ' . $this->getVersion(), "\n");
-        Visual::print('Server: ' . $this->server, "\n");
-        Visual::print('Maximum execution time: ' . $this->getMaximumExecutionTime() . ' seconds');
-        Visual::print('Maximum memory size: ' . Size::bytesToFormat($this->maxMemoryBytes) . ' (' . $this->maxMemoryBytes . ' bytes)', "\n");
-        Visual::print('Maximum upload size: ' . Size::bytesToFormat($this->maxUploadBytes) . ' (' . $this->maxUploadBytes . ' bytes)');
-        Visual::print('Modules loaded:', "\n");
-        foreach($this->extensions as $extension)
-        {
-            Visual::print(' ' . $extension . ' (' . $this->getVersion($extension) . ')', "\n");
-        }
-        Visual::print(' ', "\n");
-    }
-
-    /**
-     * @param null $extension
-     *
-     * @return string
-     */
-    private function getVersion($extension = null): string
-    {
-        if($extension !== null)
-        {
-            return \phpversion($extension);
-        }
-        return PHP_VERSION;
-    }
-
-    /**
      * @return array
      */
     private function getExtensions(): array
     {
         return \get_loaded_extensions();
-    }
-
-    /**
-     * @return string
-     */
-    private function getServer(): string
-    {
-        if(isset($_SERVER['SERVER_SOFTWARE']))
-        {
-            return $_SERVER['SERVER_SOFTWARE'];
-        }
-        return 'Probably CLI';
-    }
-
-    /**
-     * @return string
-     */
-    private function getMaximumExecutionTime(): string
-    {
-        return \ini_get('max_execution_time');
     }
 
     /**
@@ -152,5 +98,55 @@ class PHP
     private function getMaxMemoryBytes(): int
     {
         return Size::formatToBytes(\ini_get('memory_limit'));
+    }
+
+    /**
+     * @return string
+     */
+    private function getServer(): string
+    {
+        if (isset($_SERVER['SERVER_SOFTWARE'])) {
+            return $_SERVER['SERVER_SOFTWARE'];
+        }
+        return 'Probably CLI';
+    }
+
+    /**
+     * Gives output
+     */
+    private function render(): void
+    {
+        Visual::print('== Generic PHP information');
+        Visual::print('PHP version: ' . $this->getVersion(), "\n");
+        Visual::print('Server: ' . $this->server, "\n");
+        Visual::print('Maximum execution time: ' . $this->getMaximumExecutionTime() . ' seconds');
+        Visual::print('Maximum memory size: ' . Size::bytesToFormat($this->maxMemoryBytes) . ' (' . $this->maxMemoryBytes . ' bytes)', "\n");
+        Visual::print('Maximum upload size: ' . Size::bytesToFormat($this->maxUploadBytes) . ' (' . $this->maxUploadBytes . ' bytes)');
+        Visual::print('Modules loaded:', "\n");
+        foreach ($this->extensions as $extension) {
+            Visual::print(' ' . $extension . ' (' . $this->getVersion($extension) . ')', "\n");
+        }
+        Visual::print(' ', "\n");
+    }
+
+    /**
+     * @param null $extension
+     *
+     * @return string
+     */
+    private function getVersion($extension = null): string
+    {
+        if ($extension !== null) {
+            return \phpversion($extension);
+        }
+        return PHP_VERSION;
+    }
+
+    /**
+     * @return string
+     */
+    private function getMaximumExecutionTime(): string
+    {
+        return \ini_get('max_execution_time');
     }
 }

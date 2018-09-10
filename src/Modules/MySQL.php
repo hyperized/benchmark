@@ -43,6 +43,7 @@ class MySQL
 
     /**
      * MySQL constructor.
+     *
      * @param Config $config
      */
     public function __construct(Config $config)
@@ -79,16 +80,6 @@ class MySQL
     }
 
     /**
-     * Render
-     */
-    private function render(): void
-    {
-        Visual::print('== MySQL performance information', "\n");
-        Visual::print('MySQL version: ' . $this->version, "\n");
-        Visual::print('Query (Encode + random) operation results in milliseconds (less is better), for a total of ' . $this->config->get('benchmark.mysql.count') . ' cycles: ' . $this->queryResults);
-    }
-
-    /**
      * Obtain MySQL version
      */
     private function getVersion(): void
@@ -112,5 +103,15 @@ class MySQL
 
         $this->queryResults = (\microtime(true) - $start);
 
+    }
+
+    /**
+     * Render
+     */
+    private function render(): void
+    {
+        Visual::print('== MySQL performance information', "\n");
+        Visual::print('MySQL version: ' . $this->version, "\n");
+        Visual::print('Query (Encode + random) operation results in milliseconds (less is better), for a total of ' . $this->config->get('benchmark.mysql.count') . ' cycles: ' . $this->queryResults);
     }
 }

@@ -16,6 +16,27 @@ use Hyperized\Benchmark\Generic\Visual;
 class Disk
 {
     /**
+     * @var string
+     */
+    private static $path = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..';
+    /**
+     * @var string
+     */
+    private static $tmpDirectory = DIRECTORY_SEPARATOR . 'tmp';
+    /**
+     * @var array
+     */
+    private static $commonBlockSizesBytes = [
+        512,
+        1024,
+        2048,
+        4096,
+        8192,
+        16384,
+        32678,
+        65536,
+    ];
+    /**
      * @var int
      */
     private $initial;
@@ -33,29 +54,6 @@ class Disk
     private $cycles = 1;
 
     /**
-     * @var string
-     */
-    private static $path = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..';
-    /**
-     * @var string
-     */
-    private static $tmpDirectory = DIRECTORY_SEPARATOR . 'tmp';
-
-    /**
-     * @var array
-     */
-    private static $commonBlockSizesBytes = [
-        512,
-        1024,
-        2048,
-        4096,
-        8192,
-        16384,
-        32678,
-        65536,
-    ];
-
-    /**
      * Disk constructor.
      *
      * @param \Hyperized\Benchmark\Config\Config $config
@@ -67,17 +65,6 @@ class Disk
             $this->run();
             $this->render();
         }
-    }
-
-    /**
-     * Render
-     */
-    private function render(): void
-    {
-        Visual::print('== Disk performance information', "\n");
-        Visual::print('Results sorted by file size (in bytes) in milliseconds (less is better), for a total of ' . $this->cycles . ' cycles:', "\n");
-        new Table($this->counterFileCreation);
-        Visual::print(' ', "\n");
     }
 
     /**
@@ -129,5 +116,16 @@ class Disk
     private function getRandomBytes($bytes): string
     {
         return random_bytes($bytes);
+    }
+
+    /**
+     * Render
+     */
+    private function render(): void
+    {
+        Visual::print('== Disk performance information', "\n");
+        Visual::print('Results sorted by file size (in bytes) in milliseconds (less is better), for a total of ' . $this->cycles . ' cycles:', "\n");
+        new Table($this->counterFileCreation);
+        Visual::print(' ', "\n");
     }
 }

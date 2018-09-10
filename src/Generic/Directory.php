@@ -28,7 +28,7 @@ class Directory
     {
         if (\file_exists($path)) {
             $dir = \opendir($path);
-            if(\is_resource($dir)) {
+            if (\is_resource($dir)) {
                 while (false !== ($file = \readdir($dir))) {
                     if (($file !== self::$rootPath) && ($file !== self::$parentPath)) {
                         $full = $path . DIRECTORY_SEPARATOR . $file;
@@ -54,7 +54,7 @@ class Directory
      */
     public static function create($path, $permissions = 0755): bool
     {
-        if(!\file_exists($path) && !mkdir($path, $permissions) && !is_dir($path)) {
+        if (!\file_exists($path) && !mkdir($path, $permissions) && !is_dir($path)) {
             throw new \RuntimeException('Could not create directory: ' . $path);
         }
         return true;
