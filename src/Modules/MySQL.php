@@ -59,7 +59,7 @@ class MySQL
     /**
      * Configure
      */
-    private function configure()
+    private function configure(): void
     {
         $this->connection = \mysqli_connect(
             $this->config->get('benchmark.mysql.hostname'),
@@ -72,7 +72,7 @@ class MySQL
     /**
      * Run
      */
-    private function run()
+    private function run(): void
     {
         $this->getVersion();
         $this->encodeRand();
@@ -81,7 +81,7 @@ class MySQL
     /**
      * Render
      */
-    private function render()
+    private function render(): void
     {
         Visual::print('== MySQL performance information', "\n");
         Visual::print('MySQL version: ' . $this->version, "\n");
@@ -91,7 +91,7 @@ class MySQL
     /**
      * Obtain MySQL version
      */
-    private function getVersion()
+    private function getVersion(): void
     {
         $this->version = \mysqli_fetch_object(\mysqli_query($this->connection, $this->versionQuery))->version;
     }
@@ -99,7 +99,8 @@ class MySQL
     /**
      * Run encode with Random query
      */
-    private function encodeRand() {
+    private function encodeRand(): void
+    {
         $query = Utility::format($this->benchmarkQuery, [
             $this->config->get('benchmark.mysql.count'),
             $this->benchmarkText

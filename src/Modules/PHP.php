@@ -51,7 +51,7 @@ class PHP
     /**
      * Run!
      */
-    private function run()
+    private function run(): void
     {
         $this->extensions = $this->getExtensions();
         $this->maxUploadBytes = $this->getMaxUploadBytes();
@@ -62,9 +62,9 @@ class PHP
     /**
      * Gives output
      */
-    private function render()
+    private function render(): void
     {
-        Visual::print("== Generic PHP information");
+        Visual::print('== Generic PHP information');
         Visual::print('PHP version: ' . $this->getVersion(), "\n");
         Visual::print('Server: ' . $this->server, "\n");
         Visual::print('Maximum execution time: ' . $this->getMaximumExecutionTime() . ' seconds');
@@ -73,7 +73,7 @@ class PHP
         Visual::print('Modules loaded:', "\n");
         foreach($this->extensions as $extension)
         {
-            Visual::print(" " . $extension . ' (' . $this->getVersion($extension) . ')', "\n");
+            Visual::print(' ' . $extension . ' (' . $this->getVersion($extension) . ')', "\n");
         }
         Visual::print(' ', "\n");
     }
@@ -85,11 +85,11 @@ class PHP
      */
     private function getVersion($extension = null): string
     {
-        if(!\is_null($extension))
+        if($extension !== null)
         {
             return \phpversion($extension);
         }
-        return \phpversion();
+        return PHP_VERSION;
     }
 
     /**

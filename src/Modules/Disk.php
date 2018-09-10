@@ -72,10 +72,10 @@ class Disk
     /**
      * Render
      */
-    private function render()
+    private function render(): void
     {
-        Visual::print("== Disk performance information", "\n");
-        Visual::print('Results sorted by file size (in bytes) in milliseconds (less is better), for a total of ' . $this->cycles . " cycles:", "\n");
+        Visual::print('== Disk performance information', "\n");
+        Visual::print('Results sorted by file size (in bytes) in milliseconds (less is better), for a total of ' . $this->cycles . ' cycles:', "\n");
         new Table($this->counterFileCreation);
         Visual::print(' ', "\n");
     }
@@ -83,7 +83,7 @@ class Disk
     /**
      * Run!
      */
-    private function run()
+    private function run(): void
     {
         $this->initial = \time();
         $this->tmpDirectoryPath = \realpath(self::$path) . self::$tmpDirectory;

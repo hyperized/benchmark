@@ -3,10 +3,11 @@
 
 namespace Hyperized\Benchmark\Generic;
 
-// Source from: https://gist.github.com/RamadhanAmizudin/ca87f7be83c6237bb070
-
 /**
  * Class Table
+ *
+ * Source from: https://gist.github.com/RamadhanAmizudin/ca87f7be83c6237bb070
+ *
  * @package Hyperized\Benchmark\Generic
  */
 class Table
@@ -14,27 +15,27 @@ class Table
     /**
      * @var int
      */
-    static $spacingX = 1;
+    private static $spacingX = 1;
     /**
      * @var int
      */
-    static $spacingY = 0;
+    private static $spacingY = 0;
     /**
      * @var string
      */
-    static $jointCharacter = '+';
+    private static $jointCharacter = '+';
     /**
      * @var string
      */
-    static $lineXCharacter = '-';
+    private static $lineXCharacter = '-';
     /**
      * @var string
      */
-    static $lineYCharacter = '|';
+    private static $lineYCharacter = '|';
     /**
      * @var string
      */
-    static $newLine = "\n";
+    private static $newLine = "\n";
 
     /**
      * @var
@@ -79,7 +80,7 @@ class Table
     /**
      *
      */
-    private function render()
+    private function render(): void
     {
         echo $this->rowSeparator . static::$newLine;
         echo \str_repeat($this->rowSpacer . static::$newLine, static::$spacingY);
@@ -100,7 +101,7 @@ class Table
      *
      * @return array
      */
-    private function columnHeaders($table)
+    private function columnHeaders($table): array
     {
         return \array_keys(\reset($table));
     }
@@ -111,7 +112,7 @@ class Table
      *
      * @return array
      */
-    private function columnLengths($table, $columnHeaders)
+    private function columnLengths($table, $columnHeaders): array
     {
         $lengths = [];
         foreach ($columnHeaders as $header) {
@@ -124,8 +125,8 @@ class Table
                 }
             }
 
-            if (($max % 2) != ($header_length % 2)) {
-                $max += 1;
+            if (($max % 2) !== ($header_length % 2)) {
+                ++$max;
             }
 
             $lengths[$header] = $max;
@@ -139,7 +140,7 @@ class Table
      *
      * @return string
      */
-    private function rowSeparator($columnLengths)
+    private function rowSeparator($columnLengths): string
     {
         $row = '';
         foreach ($columnLengths as $columnLength) {
@@ -156,7 +157,7 @@ class Table
      *
      * @return string
      */
-    private function rowSpacer($columnLengths)
+    private function rowSpacer($columnLengths): string
     {
         $row = '';
         foreach ($columnLengths as $columnLength) {
@@ -173,7 +174,7 @@ class Table
      *
      * @return string
      */
-    private function rowHeaders($columnHeaders, $columnLengths)
+    private function rowHeaders($columnHeaders, $columnLengths): string
     {
         $row = '';
         foreach ($columnHeaders as $header) {
@@ -192,7 +193,7 @@ class Table
      *
      * @return string
      */
-    private function rowCells($rowCells, $columnHeaders, $columnLengths)
+    private function rowCells($rowCells, $columnHeaders, $columnLengths): string
     {
         $row = '';
         foreach ($columnHeaders as $header) {

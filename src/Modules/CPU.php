@@ -22,36 +22,36 @@ class CPU
      * @var array
      */
     private static $mathFunctions = [
-        "abs",
-        "acos",
-        "asin",
-        "atan",
-        "bindec",
-        "floor",
-        "exp",
-        "sin",
-        "tan",
-        "pi",
-        "is_finite",
-        "is_nan",
-        "sqrt"
+        'abs',
+        'acos',
+        'asin',
+        'atan',
+        'bindec',
+        'floor',
+        'exp',
+        'sin',
+        'tan',
+        'pi',
+        'is_finite',
+        'is_nan',
+        'sqrt'
     ];
     /**
      * @var array
      */
     private static $stringFunctions = [
-        "addslashes",
-        "chunk_split",
-        "metaphone",
-        "strip_tags",
-        "md5",
-        "sha1",
-        "strtoupper",
-        "strtolower",
-        "strrev",
-        "strlen",
-        "soundex",
-        "ord"
+        'addslashes',
+        'chunk_split',
+        'metaphone',
+        'strip_tags',
+        'md5',
+        'sha1',
+        'strtoupper',
+        'strtolower',
+        'strrev',
+        'strlen',
+        'soundex',
+        'ord'
     ];
     /**
      * @var string
@@ -116,18 +116,18 @@ class CPU
     /**
      * Configure
      */
-    private function configure()
+    private function configure(): void
     {
-        $this->mathCount = !\is_null($this->config->get('benchmark.cpu.math.count')) ? $this->config->get('benchmark.cpu.math.count') : self::$defaultCount;
-        $this->stringsCount = !\is_null($this->config->get('benchmark.cpu.strings.count')) ? $this->config->get('benchmark.cpu.strings.count') : self::$defaultCount;
-        $this->loopsCount = !\is_null($this->config->get('benchmark.cpu.loops.count')) ? $this->config->get('benchmark.cpu.loops.count') : self::$defaultCount;
-        $this->ifElseCount = !\is_null($this->config->get('benchmark.cpu.ifElse.count')) ? $this->config->get('benchmark.cpu.ifElse.count') : self::$defaultCount;
+        $this->mathCount = $this->config->get('benchmark.cpu.math.count') ?? self::$defaultCount;
+        $this->stringsCount = $this->config->get('benchmark.cpu.strings.count') ?? self::$defaultCount;
+        $this->loopsCount = $this->config->get('benchmark.cpu.loops.count') ?? self::$defaultCount;
+        $this->ifElseCount = $this->config->get('benchmark.cpu.ifElse.count') ?? self::$defaultCount;
     }
 
     /**
      * Run!
      */
-    private function run()
+    private function run(): void
     {
         $this->math();
         $this->strings();
@@ -138,7 +138,7 @@ class CPU
     /**
      * Render
      */
-    private function render()
+    private function render(): void
     {
         Visual::print('== CPU performance information', "\n");
         Visual::print('Math operation results by function in milliseconds (less is better), for a total of ' . $this->mathCount . ' cycles:');
@@ -155,14 +155,14 @@ class CPU
     /**
      * Do Maths!
      */
-    private function math()
+    private function math(): void
     {
         foreach (self::$mathFunctions as $function) {
             $this->mathResults['x'][$function] = 0;
             $start = \microtime(true);
 
             for ($i = 0; $i < $this->mathCount; $i++) {
-                \call_user_func_array($function, array($i));
+                \$function($i);
             }
 
             $this->mathResults['x'][$function] += (\microtime(true) - $start);
@@ -172,14 +172,14 @@ class CPU
     /**
      * Do string operations
      */
-    private function strings()
+    private function strings(): void
     {
         foreach (self::$stringFunctions as $function) {
             $this->stringsResults['x'][$function] = 0;
             $start = \microtime(true);
 
             for ($i = 0; $i < $this->stringsCount; $i++) {
-                \call_user_func_array($function, array(self::$string));
+                \$function(self::$string);
             }
 
             $this->stringsResults['x'][$function] += (\microtime(true) - $start);
@@ -189,7 +189,7 @@ class CPU
     /**
      * Loopy loop
      */
-    private function loops()
+    private function loops(): void
     {
         $start = \microtime(true);
 
@@ -208,20 +208,17 @@ class CPU
     /**
      * ifElseIf really ..
      */
-    private function ifElse()
+    private function ifElse(): void
     {
         $start = \microtime(true);
 
         for ($i = 0; $i < $this->ifElseCount; $i++) {
-            if ($i == -1) {
+            if ($i === -1) {
                 ;
-            } elseif ($i == -2) {
+            } elseif ($i === -2) {
                 ;
-            } else {
-                /** @noinspection PhpStatementHasEmptyBodyInspection */
-                if ($i == -3) {
-                    ;
-                }
+            } else if ($i === -3) {
+                ;
             }
         }
 

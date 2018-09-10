@@ -10,8 +10,9 @@ class Utility
      * @param string $string
      * @param array $variables
      *
-     * https://stackoverflow.com/a/17372566/1757763
      * @return mixed
+     *
+     * Sourced: https://stackoverflow.com/a/17372566/1757763
      */
     public static function format(string $string, array $variables)
     {
