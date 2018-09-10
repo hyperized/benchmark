@@ -72,11 +72,11 @@ class CPU
      */
     private $stringsResults = [];
     /**
-     * @var array
+     * @var integer
      */
     private $loopsResults;
     /**
-     * @var array
+     * @var integer
      */
     private $ifElseResults;
 
