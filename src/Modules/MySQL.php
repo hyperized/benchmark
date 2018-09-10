@@ -84,7 +84,7 @@ class MySQL
      */
     private function getVersion(): void
     {
-        $this->version = \mysqli_fetch_object(\mysqli_query($this->connection, $this->versionQuery))->version;
+        $this->version = \mysqli_get_server_version($this->connection);
     }
 
     /**
