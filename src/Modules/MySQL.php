@@ -23,10 +23,6 @@ class MySQL
     /**
      * @var string
      */
-    private $versionQuery = 'SELECT VERSION() as version;';
-    /**
-     * @var string
-     */
     private $benchmarkQuery = 'SELECT BENCHMARK({},ENCODE(\'{}\',RAND()));';
     /**
      * @var string
@@ -84,7 +80,7 @@ class MySQL
      */
     private function getVersion(): void
     {
-        $this->version = \mysqli_fetch_object(\mysqli_query($this->connection, $this->versionQuery))->version;
+        $this->version = \mysqli_get_server_version($this->connection);
     }
 
     /**
