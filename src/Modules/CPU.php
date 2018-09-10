@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpStatementHasEmptyBodyInspection */
 
 namespace Hyperized\Benchmark\Modules;
 
@@ -160,11 +160,9 @@ class CPU
         foreach (self::$mathFunctions as $function) {
             $this->mathResults['x'][$function] = 0;
             $start = \microtime(true);
-
             for ($i = 0; $i < $this->mathCount; $i++) {
-                \$function($i);
+                \call_user_func_array($function, array($i));
             }
-
             $this->mathResults['x'][$function] += (\microtime(true) - $start);
         }
     }
@@ -177,11 +175,9 @@ class CPU
         foreach (self::$stringFunctions as $function) {
             $this->stringsResults['x'][$function] = 0;
             $start = \microtime(true);
-
             for ($i = 0; $i < $this->stringsCount; $i++) {
-                \$function(self::$string);
+                \call_user_func_array($function, array(self::$string));
             }
-
             $this->stringsResults['x'][$function] += (\microtime(true) - $start);
         }
     }
@@ -193,7 +189,6 @@ class CPU
     {
         $start = \microtime(true);
 
-        /** @noinspection PhpStatementHasEmptyBodyInspection */
         for ($i = 0; $i < $this->loopsCount; ++$i) {
             ;
         }
