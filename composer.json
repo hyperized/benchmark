@@ -21,7 +21,7 @@
     "symfony/config": "^4.1",
     "symfony/yaml": "^4.1",
     "php-di/php-di": "^6.0",
-    "adbario/php-dot-notation": "2.2.0",
+    "adbario/php-dot-notation": "2.5.0",
     "ext-mysqli": "^7.1"
   },
   "autoload": {
