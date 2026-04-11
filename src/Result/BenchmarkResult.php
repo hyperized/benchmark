@@ -17,6 +17,13 @@ final readonly class BenchmarkResult implements \JsonSerializable
         public ?JsonResult $json,
         public ?RegexResult $regex,
         public ?FileReadResult $fileRead,
+        public ?SerializationResult $serialization,
+        public ?HashingResult $hashing,
+        public ?EncryptionResult $encryption,
+        public ?FunctionOverheadResult $functionOverhead,
+        public ?TypeCastingResult $typeCasting,
+        public ?AutoloadingResult $autoloading,
+        public ?CompressionResult $compression,
         public ?MySqlResult $mysql,
     ) {}
 
@@ -53,6 +60,27 @@ final readonly class BenchmarkResult implements \JsonSerializable
         }
         if ($this->fileRead !== null) {
             $data['file_read'] = $this->fileRead;
+        }
+        if ($this->serialization !== null) {
+            $data['serialization'] = $this->serialization;
+        }
+        if ($this->hashing !== null) {
+            $data['hashing'] = $this->hashing;
+        }
+        if ($this->encryption !== null) {
+            $data['encryption'] = $this->encryption;
+        }
+        if ($this->functionOverhead !== null) {
+            $data['function_overhead'] = $this->functionOverhead;
+        }
+        if ($this->typeCasting !== null) {
+            $data['type_casting'] = $this->typeCasting;
+        }
+        if ($this->autoloading !== null) {
+            $data['autoloading'] = $this->autoloading;
+        }
+        if ($this->compression !== null) {
+            $data['compression'] = $this->compression;
         }
         if ($this->mysql !== null) {
             $data['mysql'] = $this->mysql;
