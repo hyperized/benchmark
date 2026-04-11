@@ -1,38 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hyperized\Benchmark\Config;
 
 use Symfony\Component\Config\Loader\FileLoader;
 use Symfony\Component\Yaml\Yaml;
 
-/**
- * Class YamlConfigLoader
- * @package Hyperized\Benchmark\Config
- */
 class YamlConfigLoader extends FileLoader
 {
-    /**
-     * @param mixed $resource   The resource
-     * @param string|null $type The resource type or null if unknown
-     *
-     * @return mixed
-     */
-    public function load($resource, $type = null)
+    public function load(mixed $resource, ?string $type = null): mixed
     {
-        return Yaml::parse(\file_get_contents($resource));
+        $content = \file_get_contents($resource);
+        if ($content === false) {
+            throw new \RuntimeException('Could not read file: ' . $resource);
+        }
+        return Yaml::parse($content);
     }
 
-    /**
-     * @param mixed $resource   A resource
-     * @param string|null $type The resource type or null if unknown
-     *
-     * @return bool
-     */
-    public function supports($resource, $type = null): bool
+    public function supports(mixed $resource, ?string $type = null): bool
     {
         return \is_string($resource) && 'yml' === \pathinfo(
-                $resource,
-                PATHINFO_EXTENSION
-            );
+            $resource,
+            PATHINFO_EXTENSION,
+        );
     }
 }
