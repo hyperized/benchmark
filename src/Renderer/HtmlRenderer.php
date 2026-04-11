@@ -87,7 +87,7 @@ final class HtmlRenderer implements RendererInterface
 
     private function renderDisk(DiskResult $disk): void
     {
-        echo '<section class="card">';
+        echo '<section class="card card-wide">';
         echo '<div class="card-title">Disk I/O</div>';
         echo '<div class="card-body">';
         echo '<p class="subtitle">' . $disk->cycles . ' cycles &middot; seconds (lower is better)</p>';
