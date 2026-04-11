@@ -54,23 +54,61 @@ final class Benchmark
     {
         $start = \microtime(true);
         $timestamp = new \DateTimeImmutable();
+        $isCli = $this->detectOutputMode() === OutputMode::Cli;
 
-        $phpResult = $this->php->isEnabled() ? $this->php->run() : null;
-        $diskResult = $this->disk->isEnabled() ? $this->disk->run() : null;
-        $memoryResult = $this->memory->isEnabled() ? $this->memory->run() : null;
-        $networkResult = $this->network->isEnabled() ? $this->network->run() : null;
-        $jsonResult = $this->json->isEnabled() ? $this->json->run() : null;
-        $regexResult = $this->regex->isEnabled() ? $this->regex->run() : null;
-        $fileReadResult = $this->fileRead->isEnabled() ? $this->fileRead->run() : null;
-        $serializationResult = $this->serialization->isEnabled() ? $this->serialization->run() : null;
-        $hashingResult = $this->hashing->isEnabled() ? $this->hashing->run() : null;
-        $encryptionResult = $this->encryption->isEnabled() ? $this->encryption->run() : null;
-        $functionOverheadResult = $this->functionOverhead->isEnabled() ? $this->functionOverhead->run() : null;
-        $typeCastingResult = $this->typeCasting->isEnabled() ? $this->typeCasting->run() : null;
-        $autoloadingResult = $this->autoloading->isEnabled() ? $this->autoloading->run() : null;
-        $compressionResult = $this->compression->isEnabled() ? $this->compression->run() : null;
-        $cpuResult = $this->cpu->isEnabled() ? $this->cpu->run() : null;
-        $mysqlResult = $this->mysql->isEnabled() ? $this->mysql->run() : null;
+        $modules = [
+            'PHP' => $this->php,
+            'Disk I/O' => $this->disk,
+            'Memory' => $this->memory,
+            'Network' => $this->network,
+            'JSON' => $this->json,
+            'Regex' => $this->regex,
+            'File Read' => $this->fileRead,
+            'Serialization' => $this->serialization,
+            'Hashing' => $this->hashing,
+            'Encryption' => $this->encryption,
+            'Function Overhead' => $this->functionOverhead,
+            'Type Casting' => $this->typeCasting,
+            'Object Instantiation' => $this->autoloading,
+            'Compression' => $this->compression,
+            'CPU' => $this->cpu,
+            'MySQL' => $this->mysql,
+        ];
+
+        $enabledModules = \array_filter($modules, static fn($m) => $m->isEnabled());
+        $total = \count($enabledModules);
+        $current = 0;
+
+        /** @var array<string, mixed> $results */
+        $results = [];
+        foreach ($enabledModules as $name => $module) {
+            $current++;
+            if ($isCli) {
+                echo "\r\033[2m  [{$current}/{$total}] Running {$name}...\033[0m\033[K";
+            }
+            $results[$name] = $module->run();
+        }
+
+        if ($isCli) {
+            echo "\r\033[K";
+        }
+
+        $phpResult = $results['PHP'] ?? null;
+        $diskResult = $results['Disk I/O'] ?? null;
+        $memoryResult = $results['Memory'] ?? null;
+        $networkResult = $results['Network'] ?? null;
+        $jsonResult = $results['JSON'] ?? null;
+        $regexResult = $results['Regex'] ?? null;
+        $fileReadResult = $results['File Read'] ?? null;
+        $serializationResult = $results['Serialization'] ?? null;
+        $hashingResult = $results['Hashing'] ?? null;
+        $encryptionResult = $results['Encryption'] ?? null;
+        $functionOverheadResult = $results['Function Overhead'] ?? null;
+        $typeCastingResult = $results['Type Casting'] ?? null;
+        $autoloadingResult = $results['Object Instantiation'] ?? null;
+        $compressionResult = $results['Compression'] ?? null;
+        $cpuResult = $results['CPU'] ?? null;
+        $mysqlResult = $results['MySQL'] ?? null;
 
         $result = new BenchmarkResult(
             timestamp: $timestamp,
