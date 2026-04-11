@@ -9,7 +9,7 @@ use Hyperized\Benchmark\Result\SerializationResult;
 
 class Serialization implements BenchmarkModuleInterface
 {
-    private static int $defaultCount = 9999;
+    private static int $defaultCount = 2000;
 
     public function __construct(private readonly Config $config) {}
 
