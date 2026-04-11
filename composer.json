@@ -16,17 +16,26 @@
     }
   ],
   "require": {
+    "php": ">=8.4",
     "roave/security-advisories": "dev-master",
-    "php": ">=7.1",
-    "symfony/config": "^4.1",
-    "symfony/yaml": "^4.1",
-    "php-di/php-di": "^6.0",
-    "adbario/php-dot-notation": "2.2.0",
-    "ext-mysqli": "^7.1"
+    "symfony/config": "^7.0",
+    "symfony/yaml": "^7.0",
+    "php-di/php-di": "^7.0",
+    "adbario/php-dot-notation": "^3.0",
+    "ext-mysqli": "*"
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^2.0",
+    "friendsofphp/php-cs-fixer": "^3.0"
   },
   "autoload": {
     "psr-4": {
       "Hyperized\\Benchmark\\": "src/"
     }
+  },
+  "scripts": {
+    "analyse": "phpstan analyse",
+    "cs-fix": "php-cs-fixer fix --allow-risky=yes",
+    "cs-check": "php-cs-fixer fix --dry-run --diff --allow-risky=yes"
   }
 }

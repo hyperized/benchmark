@@ -1,45 +1,45 @@
-<?php /** @noinspection PhpStatementHasEmptyBodyInspection */
+<?php
+
+/** @noinspection PhpStatementHasEmptyBodyInspection */
+
+declare(strict_types=1);
 
 namespace Hyperized\Benchmark\Modules;
 
 use Hyperized\Benchmark\Config\Config;
-use Hyperized\Benchmark\Generic\Table;
-use Hyperized\Benchmark\Generic\Visual;
+use Hyperized\Benchmark\Result\CpuResult;
 
-/**
- * Class CPU
- * @package Hyperized\Benchmark\Modules
- *
- * Totally borrowed from: https://github.com/odan/benchmark-php/blob/master/benchmark.php
- */
-class CPU
+class CPU implements BenchmarkModuleInterface
 {
-    /**
-     * @var int
-     */
-    private static $defaultCount = 99999;
-    /**
-     * @var array
-     */
-    private static $mathFunctions = [
+    private static int $defaultCount = 99999;
+
+    /** @var list<callable-string> */
+    private static array $mathFunctions = [
         'abs',
         'acos',
         'asin',
         'atan',
-        'bindec',
         'floor',
         'exp',
         'sin',
         'tan',
-        'pi',
         'is_finite',
         'is_nan',
-        'sqrt'
+        'sqrt',
     ];
-    /**
-     * @var array
-     */
-    private static $stringFunctions = [
+
+    /** @var list<callable-string> Functions that take a string argument */
+    private static array $mathStringFunctions = [
+        'bindec',
+    ];
+
+    /** @var list<callable-string> Functions that take no arguments */
+    private static array $mathNoArgFunctions = [
+        'pi',
+    ];
+
+    /** @var list<callable-string> */
+    private static array $stringFunctions = [
         'addslashes',
         'chunk_split',
         'metaphone',
@@ -51,172 +51,122 @@ class CPU
         'strrev',
         'strlen',
         'soundex',
-        'ord'
+        'ord',
     ];
-    /**
-     * @var string
-     */
-    private static $string = 'the quick brown fox jumps over the lazy dog';
 
-    /**
-     * @var \Hyperized\Benchmark\Config\Config
-     */
-    private $config;
+    private static string $string = 'the quick brown fox jumps over the lazy dog';
 
-    /**
-     * @var array
-     */
-    private $mathResults = [];
-    /**
-     * @var array
-     */
-    private $stringsResults = [];
-    /**
-     * @var integer
-     */
-    private $loopsResults;
-    /**
-     * @var integer
-     */
-    private $ifElseResults;
+    public function __construct(private readonly Config $config) {}
 
-    /**
-     * @var
-     */
-    private $mathCount;
-    /**
-     * @var
-     */
-    private $stringsCount;
-    /**
-     * @var
-     */
-    private $loopsCount;
-    /**
-     * @var
-     */
-    private $ifElseCount;
-
-    /**
-     * CPU constructor.
-     *
-     * @param \Hyperized\Benchmark\Config\Config $config
-     */
-    public function __construct(Config $config)
+    public function isEnabled(): bool
     {
-        $this->config = $config;
-        $this->configure();
+        return (bool) $this->config->get('benchmark.cpu.enabled');
+    }
 
-        if ($config->get('benchmark.cpu.enabled')) {
-            $this->run();
-            $this->render();
-        }
+    public function run(): CpuResult
+    {
+        $mathCount = (int) ($this->config->get('benchmark.cpu.math.count') ?? self::$defaultCount);
+        $stringsCount = (int) ($this->config->get('benchmark.cpu.strings.count') ?? self::$defaultCount);
+        $loopsCount = (int) ($this->config->get('benchmark.cpu.loops.count') ?? self::$defaultCount);
+        $ifElseCount = (int) ($this->config->get('benchmark.cpu.ifElse.count') ?? self::$defaultCount);
+
+        return new CpuResult(
+            mathResults: $this->math($mathCount),
+            mathCount: $mathCount,
+            stringResults: $this->strings($stringsCount),
+            stringCount: $stringsCount,
+            loopsResult: $this->loops($loopsCount),
+            loopsCount: $loopsCount,
+            ifElseResult: $this->ifElse($ifElseCount),
+            ifElseCount: $ifElseCount,
+        );
     }
 
     /**
-     * Configure
+     * @return array<string, float>
      */
-    private function configure(): void
+    private function math(int $count): array
     {
-        $this->mathCount = $this->config->get('benchmark.cpu.math.count') ?? self::$defaultCount;
-        $this->stringsCount = $this->config->get('benchmark.cpu.strings.count') ?? self::$defaultCount;
-        $this->loopsCount = $this->config->get('benchmark.cpu.loops.count') ?? self::$defaultCount;
-        $this->ifElseCount = $this->config->get('benchmark.cpu.ifElse.count') ?? self::$defaultCount;
-    }
+        $results = [];
 
-    /**
-     * Run!
-     */
-    private function run(): void
-    {
-        $this->math();
-        $this->strings();
-        $this->loops();
-        $this->ifElse();
-    }
-
-    /**
-     * Do Maths!
-     */
-    private function math(): void
-    {
         foreach (self::$mathFunctions as $function) {
-            $this->mathResults['x'][$function] = 0;
+            $callable = $function(...);
             $start = \microtime(true);
-            for ($i = 0; $i < $this->mathCount; $i++) {
-                \call_user_func_array($function, array($i));
+            for ($i = 0; $i < $count; $i++) {
+                $callable($i);
             }
-            $this->mathResults['x'][$function] += (\microtime(true) - $start);
+            $results[$function] = \microtime(true) - $start;
         }
+
+        foreach (self::$mathStringFunctions as $function) {
+            $callable = $function(...);
+            $start = \microtime(true);
+            for ($i = 0; $i < $count; $i++) {
+                $callable((string) $i);
+            }
+            $results[$function] = \microtime(true) - $start;
+        }
+
+        foreach (self::$mathNoArgFunctions as $function) {
+            $callable = $function(...);
+            $start = \microtime(true);
+            for ($i = 0; $i < $count; $i++) {
+                $callable();
+            }
+            $results[$function] = \microtime(true) - $start;
+        }
+
+        return $results;
     }
 
     /**
-     * Do string operations
+     * @return array<string, float>
      */
-    private function strings(): void
+    private function strings(int $count): array
     {
+        $results = [];
+
         foreach (self::$stringFunctions as $function) {
-            $this->stringsResults['x'][$function] = 0;
+            $callable = $function(...);
             $start = \microtime(true);
-            for ($i = 0; $i < $this->stringsCount; $i++) {
-                \call_user_func_array($function, array(self::$string));
+            for ($i = 0; $i < $count; $i++) {
+                $callable(self::$string);
             }
-            $this->stringsResults['x'][$function] += (\microtime(true) - $start);
+            $results[$function] = \microtime(true) - $start;
         }
+
+        return $results;
     }
 
-    /**
-     * Loopy loop
-     */
-    private function loops(): void
+    private function loops(int $count): float
     {
         $start = \microtime(true);
 
-        for ($i = 0; $i < $this->loopsCount; ++$i) {
+        for ($i = 0; $i < $count; ++$i) {
             ;
         }
         $i = 0;
-        while ($i < $this->loopsCount) {
+        while ($i < $count) {
             ++$i;
         }
 
-        $this->loopsResults = (\microtime(true) - $start);
+        return \microtime(true) - $start;
     }
 
-    /**
-     * ifElseIf really ..
-     */
-    private function ifElse(): void
+    private function ifElse(int $count): float
     {
         $start = \microtime(true);
 
-        for ($i = 0; $i < $this->ifElseCount; $i++) {
-            if ($i === -1) {
+        for ($i = 0; $i < $count; $i++) {
+            if ($i === -1) { /** @phpstan-ignore identical.alwaysFalse */
                 ;
-            } elseif ($i === -2) {
+            } elseif ($i === -2) { /** @phpstan-ignore identical.alwaysFalse */
                 ;
-            } else if ($i === -3) {
+            } elseif ($i === -3) { /** @phpstan-ignore identical.alwaysFalse */
                 ;
             }
         }
 
-        $this->ifElseResults = (\microtime(true) - $start);
-    }
-
-    /**
-     * Render
-     */
-    private function render(): void
-    {
-        Visual::print('== CPU performance information', "\n");
-        Visual::print('Math operation results by function in milliseconds (less is better), for a total of ' . $this->mathCount . ' cycles:');
-        new Table($this->mathResults);
-        Visual::print(' ', "\n");
-        Visual::print('String operation results by function in milliseconds (less is better), for a total of ' . $this->stringsCount . ' cycles:');
-        new Table($this->stringsResults);
-        Visual::print(' ', "\n");
-        Visual::print('Loop operation results in milliseconds (less is better), for a total of ' . $this->loopsCount . ' cycles: ' . $this->loopsResults);
-        Visual::print('If/Else operation results in milliseconds (less is better), for a total of ' . $this->ifElseCount . ' cycles: ' . $this->ifElseResults);
-        Visual::print(' ', "\n");
+        return \microtime(true) - $start;
     }
 }

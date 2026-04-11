@@ -1,60 +1,39 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Hyperized\Benchmark\Generic;
 
-
-/**
- * Class Directory
- * @package Hyperized\Benchmark\Generic
- */
 class Directory
 {
-    /**
-     * @var string
-     */
-    private static $rootPath = '.';
-    /**
-     * @var string
-     */
-    private static $parentPath = '..';
-
-    /**
-     * @param $path
-     *
-     * http://php.net/manual/en/function.rmdir.php#119949
-     */
-    public static function removeRecursively($path): void
+    public static function removeRecursively(string $path): void
     {
-        if (\file_exists($path)) {
-            $dir = \opendir($path);
-            if (\is_resource($dir)) {
-                while (false !== ($file = \readdir($dir))) {
-                    if (($file !== self::$rootPath) && ($file !== self::$parentPath)) {
-                        $full = $path . DIRECTORY_SEPARATOR . $file;
-                        if (\is_dir($full)) {
-                            self::removeRecursively($full);
-                        } else {
-                            \unlink($full);
-                        }
-                    }
-                }
-                \closedir($dir);
-            }
-            \rmdir($path);
+        if (!\file_exists($path)) {
+            return;
         }
+
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST,
+        );
+
+        foreach ($iterator as $file) {
+            if ($file->isDir()) {
+                \rmdir($file->getPathname());
+            } else {
+                \unlink($file->getPathname());
+            }
+        }
+
+        \rmdir($path);
     }
 
     /**
-     * @param $path
-     * @param $permissions
-     *
-     * @return bool
-     * @throws \Exception
+     * @throws \RuntimeException
      */
-    public static function create($path, $permissions = 0755): bool
+    public static function create(string $path, int $permissions = 0755): bool
     {
-        if (!\file_exists($path) && !mkdir($path, $permissions) && !is_dir($path)) {
+        if (!\file_exists($path) && !\mkdir($path, $permissions) && !\is_dir($path)) {
             throw new \RuntimeException('Could not create directory: ' . $path);
         }
         return true;

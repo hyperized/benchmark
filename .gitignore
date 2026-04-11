@@ -2,3 +2,7 @@
 /.idea/
 /config/*.yml
 composer.lock
+.php-cs-fixer.cache
+reports/*.json
+CLAUDE.md
+/.claude

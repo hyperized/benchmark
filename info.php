@@ -1,3 +1,5 @@
 <?php
 
-    \phpinfo();
+declare(strict_types=1);
+
+\phpinfo();

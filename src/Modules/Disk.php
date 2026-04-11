@@ -1,32 +1,20 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Hyperized\Benchmark\Modules;
 
-
 use Hyperized\Benchmark\Config\Config;
 use Hyperized\Benchmark\Generic\Directory;
-use Hyperized\Benchmark\Generic\Table;
-use Hyperized\Benchmark\Generic\Visual;
+use Hyperized\Benchmark\Result\DiskResult;
 
-/**
- * Class Disk
- * @package Hyperized\Benchmark\Modules
- */
-class Disk
+class Disk implements BenchmarkModuleInterface
 {
-    /**
-     * @var string
-     */
-    private static $path = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..';
-    /**
-     * @var string
-     */
-    private static $tmpDirectory = DIRECTORY_SEPARATOR . 'tmp';
-    /**
-     * @var array
-     */
-    private static $commonBlockSizesBytes = [
+    private static string $path = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..';
+    private static string $tmpDirectory = DIRECTORY_SEPARATOR . 'tmp';
+
+    /** @var list<positive-int> */
+    private static array $commonBlockSizesBytes = [
         512,
         1024,
         2048,
@@ -36,96 +24,50 @@ class Disk
         32678,
         65536,
     ];
-    /**
-     * @var int
-     */
-    private $initial;
-    /**
-     * @var
-     */
-    private $tmpDirectoryPath;
-    /**
-     * @var array
-     */
-    private $counterFileCreation = [];
-    /**
-     * @var int
-     */
-    private $cycles = 1;
 
-    /**
-     * Disk constructor.
-     *
-     * @param \Hyperized\Benchmark\Config\Config $config
-     */
-    public function __construct(Config $config)
+    public function __construct(private readonly Config $config) {}
+
+    public function isEnabled(): bool
     {
-        if ($config->get('benchmark.disk.enabled')) {
-            $this->cycles = $config->get('benchmark.disk.cycles');
-            $this->run();
-            $this->render();
-        }
+        return (bool) $this->config->get('benchmark.disk.enabled');
     }
 
-    /**
-     * Run!
-     */
-    private function run(): void
+    public function run(): DiskResult
     {
-        $this->initial = \time();
-        $this->tmpDirectoryPath = \realpath(self::$path) . self::$tmpDirectory;
+        $cycles = (int) $this->config->get('benchmark.disk.cycles');
+        $initial = \time();
+        $tmpDirectoryPath = \realpath(self::$path) . self::$tmpDirectory;
 
-        try {
-            // Create subdirectory
-            Directory::create($this->tmpDirectoryPath);
+        /** @var array<int, float> $fileCreationTimes */
+        $fileCreationTimes = [];
 
+        Directory::create($tmpDirectoryPath);
+
+        foreach (self::$commonBlockSizesBytes as $bytes) {
+            $fileCreationTimes[$bytes] = 0.0;
+        }
+
+        for ($c = $cycles; $c >= 0; $c--) {
             foreach (self::$commonBlockSizesBytes as $bytes) {
-                $this->counterFileCreation['Run'][$bytes] = 0;
-            }
+                $prefix = $initial . '_' . $bytes;
+                $content = \random_bytes($bytes);
 
-            for ($c = $this->cycles; $c >= 0; $c--) {
-                // Generate files with different block sizes
-                foreach (self::$commonBlockSizesBytes as $bytes) {
-                    $prefix = $this->initial . '_' . $bytes;
-                    $content = $this->getRandomBytes($bytes);
+                $start = \microtime(true);
 
-                    // Start the timer (measure only disk interaction, not string generation etc)
-                    $start = \microtime(true);
-
-                    $file = \tempnam($this->tmpDirectoryPath, $prefix);
+                $file = \tempnam($tmpDirectoryPath, $prefix);
+                if ($file !== false) {
                     \file_put_contents($file, $content);
-
-                    // Stop timer & append time to timer array with this block size
-                    $this->counterFileCreation['Run'][$bytes] += (\microtime(true) - $start);
                 }
+
+                $fileCreationTimes[$bytes] += (\microtime(true) - $start);
             }
-
-            // Clean up
-            Directory::removeRecursively($this->tmpDirectoryPath);
-        } catch (\Exception $e) {
-            Visual::print($e);
         }
-    }
 
-    /**
-     * @param $bytes
-     *
-     * @return string
-     * @throws \Exception
-     */
-    private function getRandomBytes($bytes): string
-    {
-        return random_bytes($bytes);
-    }
+        Directory::removeRecursively($tmpDirectoryPath);
 
-    /**
-     * Render
-     */
-    private function render(): void
-    {
-        Visual::print('== Disk performance information', "\n");
-        Visual::print('Results sorted by file size (in bytes) in milliseconds (less is better), for a total of ' . $this->cycles . ' cycles:', "\n");
-        new Table($this->counterFileCreation);
-        Visual::print(' ', "\n");
+        return new DiskResult(
+            fileCreationTimes: $fileCreationTimes,
+            cycles: $cycles,
+        );
     }
 }

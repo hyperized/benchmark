@@ -1,0 +1,435 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Hyperized\Benchmark\Renderer;
+
+use Hyperized\Benchmark\Generic\Size;
+use Hyperized\Benchmark\Result\BenchmarkResult;
+use Hyperized\Benchmark\Result\CpuResult;
+use Hyperized\Benchmark\Result\DiskResult;
+use Hyperized\Benchmark\Result\AutoloadingResult;
+use Hyperized\Benchmark\Result\CompressionResult;
+use Hyperized\Benchmark\Result\EncryptionResult;
+use Hyperized\Benchmark\Result\FileReadResult;
+use Hyperized\Benchmark\Result\FunctionOverheadResult;
+use Hyperized\Benchmark\Result\HashingResult;
+use Hyperized\Benchmark\Result\JsonResult;
+use Hyperized\Benchmark\Result\MemoryResult;
+use Hyperized\Benchmark\Result\MySqlResult;
+use Hyperized\Benchmark\Result\NetworkResult;
+use Hyperized\Benchmark\Result\PhpResult;
+use Hyperized\Benchmark\Result\RegexResult;
+use Hyperized\Benchmark\Result\SerializationResult;
+use Hyperized\Benchmark\Result\TypeCastingResult;
+
+final class CliRenderer implements RendererInterface
+{
+    private const string RESET = "\033[0m";
+    private const string BOLD = "\033[1m";
+    private const string DIM = "\033[2m";
+    private const string GREEN = "\033[32m";
+    private const string YELLOW = "\033[33m";
+    private const string BOLD_CYAN = "\033[1;36m";
+    private const string BOLD_WHITE = "\033[1;37m";
+
+    private const int WIDTH = 50;
+
+    public function render(BenchmarkResult $result, ?string $reportPath): void
+    {
+        $this->renderHeader($result);
+
+        if ($result->php !== null) {
+            $this->renderPhp($result->php);
+        }
+        if ($result->disk !== null) {
+            $this->renderDisk($result->disk);
+        }
+        if ($result->memory !== null) {
+            $this->renderMemory($result->memory);
+        }
+        if ($result->network !== null) {
+            $this->renderNetwork($result->network);
+        }
+        if ($result->json !== null) {
+            $this->renderJson($result->json);
+        }
+        if ($result->regex !== null) {
+            $this->renderRegex($result->regex);
+        }
+        if ($result->fileRead !== null) {
+            $this->renderFileRead($result->fileRead);
+        }
+        if ($result->serialization !== null) {
+            $this->renderSerialization($result->serialization);
+        }
+        if ($result->hashing !== null) {
+            $this->renderHashing($result->hashing);
+        }
+        if ($result->encryption !== null) {
+            $this->renderEncryption($result->encryption);
+        }
+        if ($result->functionOverhead !== null) {
+            $this->renderFunctionOverhead($result->functionOverhead);
+        }
+        if ($result->typeCasting !== null) {
+            $this->renderTypeCasting($result->typeCasting);
+        }
+        if ($result->autoloading !== null) {
+            $this->renderAutoloading($result->autoloading);
+        }
+        if ($result->compression !== null) {
+            $this->renderCompression($result->compression);
+        }
+        if ($result->cpu !== null) {
+            $this->renderCpu($result->cpu);
+        }
+        if ($result->mysql !== null) {
+            $this->renderMySql($result->mysql);
+        }
+
+        $this->renderFooter($result, $reportPath);
+    }
+
+    private function renderHeader(BenchmarkResult $result): void
+    {
+        $title = 'PHP Benchmark Report';
+        $date = $result->timestamp->format('Y-m-d H:i:s');
+        $innerWidth = self::WIDTH - 2;
+
+        echo "\n";
+        echo self::BOLD_CYAN . '╔' . \str_repeat('═', $innerWidth) . '╗' . self::RESET . "\n";
+        echo self::BOLD_CYAN . '║' . self::BOLD_WHITE . \str_pad('  ' . $title, $innerWidth) . self::BOLD_CYAN . '║' . self::RESET . "\n";
+        echo self::BOLD_CYAN . '║' . self::DIM . \str_pad('  ' . $date, $innerWidth) . self::BOLD_CYAN . '║' . self::RESET . "\n";
+        echo self::BOLD_CYAN . '╚' . \str_repeat('═', $innerWidth) . '╝' . self::RESET . "\n";
+    }
+
+    private function renderPhp(PhpResult $php): void
+    {
+        $this->sectionTitle('PHP');
+
+        $this->keyValue('PHP Version', $php->phpVersion);
+        $this->keyValue('Server', $php->server);
+        $this->keyValue('Max Memory', Size::bytesToFormat($php->maxMemoryBytes));
+        $this->keyValue('Max Upload', Size::bytesToFormat($php->maxUploadBytes));
+        $this->keyValue('Max Exec Time', $php->maxExecutionTime . ' seconds');
+        $this->keyValue('Extensions', \count($php->extensions) . ' loaded');
+        echo "\n";
+    }
+
+    private function renderDisk(DiskResult $disk): void
+    {
+        $this->sectionTitle('Disk I/O');
+
+        echo '  ' . self::DIM . 'Cycles: ' . self::RESET . self::GREEN . $disk->cycles . self::RESET . "\n";
+        echo '  ' . self::DIM . 'ms (lower is better)' . self::RESET . "\n\n";
+
+        /** @var array<string, string> $headers */
+        $headers = [];
+        /** @var array<string, string> $values */
+        $values = [];
+        foreach ($disk->fileCreationTimes as $blockSize => $time) {
+            $label = Size::bytesToFormat($blockSize);
+            $headers[$label] = $label;
+            $values[$label] = \sprintf('%.2fms', $time * 1000);
+        }
+
+        echo $this->buildTable($headers, [$values]);
+    }
+
+    private function renderMemory(MemoryResult $memory): void
+    {
+        $this->sectionTitle('Memory');
+
+        echo '  ' . self::DIM . $memory->cycles . ' cycles · ms (lower is better)' . self::RESET . "\n\n";
+
+        /** @var array<string, string> $timeHeaders */
+        $timeHeaders = [];
+        /** @var array<string, string> $timeValues */
+        $timeValues = [];
+        /** @var array<string, string> $peakValues */
+        $peakValues = [];
+        foreach ($memory->allocationTimes as $name => $time) {
+            $timeHeaders[$name] = $name;
+            $timeValues[$name] = \sprintf('%.2fms', $time * 1000);
+            $peakValues[$name] = Size::bytesToFormat($memory->peakMemoryUsages[$name]);
+        }
+
+        echo '  ' . self::BOLD . 'Time' . self::RESET . "\n\n";
+        echo $this->buildTable($timeHeaders, [$timeValues]);
+
+        echo '  ' . self::BOLD . 'Peak Memory' . self::RESET . "\n\n";
+        echo $this->buildTable($timeHeaders, [$peakValues]);
+    }
+
+    private function renderNetwork(NetworkResult $network): void
+    {
+        $this->sectionTitle('Network');
+
+        echo '  ' . self::DIM . $network->cycles . ' cycles · average ms per cycle (lower is better)' . self::RESET . "\n\n";
+
+        echo '  ' . self::BOLD . 'DNS Resolution' . self::RESET . "\n\n";
+        echo $this->buildResultTable($network->dnsResolutionTimes);
+
+        echo '  ' . self::BOLD . 'TCP Connection' . self::RESET . "\n\n";
+        echo $this->buildResultTable($network->connectionTimes);
+    }
+
+    private function renderJson(JsonResult $json): void
+    {
+        $this->sectionTitle('JSON');
+
+        echo '  ' . self::DIM . $json->cycles . ' cycles · ms (lower is better)' . self::RESET . "\n\n";
+
+        echo '  ' . self::BOLD . 'Encode' . self::RESET . "\n\n";
+        echo $this->buildResultTable($json->encodeTimes);
+
+        echo '  ' . self::BOLD . 'Decode' . self::RESET . "\n\n";
+        echo $this->buildResultTable($json->decodeTimes);
+    }
+
+    private function renderRegex(RegexResult $regex): void
+    {
+        $this->sectionTitle('Regex');
+
+        echo '  ' . self::DIM . $regex->cycles . ' cycles · ms (lower is better)' . self::RESET . "\n\n";
+
+        echo '  ' . self::BOLD . 'Match' . self::RESET . "\n\n";
+        echo $this->buildResultTable($regex->matchTimes);
+
+        echo '  ' . self::BOLD . 'Replace' . self::RESET . "\n\n";
+        echo $this->buildResultTable($regex->replaceTimes);
+    }
+
+    private function renderFileRead(FileReadResult $fileRead): void
+    {
+        $this->sectionTitle('File Read');
+
+        echo '  ' . self::DIM . $fileRead->cycles . ' cycles · ms (lower is better)' . self::RESET . "\n\n";
+
+        echo $this->buildResultTable($fileRead->readTimes);
+    }
+
+    private function renderSerialization(SerializationResult $serialization): void
+    {
+        $this->sectionTitle('Serialization');
+
+        echo '  ' . self::DIM . $serialization->cycles . ' cycles · ms (lower is better)' . self::RESET . "\n\n";
+
+        echo '  ' . self::BOLD . 'Serialize' . self::RESET . "\n\n";
+        echo $this->buildResultTable($serialization->serializeTimes);
+
+        echo '  ' . self::BOLD . 'Unserialize' . self::RESET . "\n\n";
+        echo $this->buildResultTable($serialization->unserializeTimes);
+    }
+
+    private function renderHashing(HashingResult $hashing): void
+    {
+        $this->sectionTitle('Hashing');
+
+        echo '  ' . self::BOLD . 'Hash Functions' . self::RESET . self::DIM . ' (' . $hashing->hashCycles . ' cycles, ms, lower is better)' . self::RESET . "\n\n";
+        echo $this->buildResultTable($hashing->hashTimes);
+
+        echo '  ' . self::BOLD . 'Password Hashing' . self::RESET . self::DIM . ' (' . $hashing->passwordCycles . ' cycles, ms, lower is better)' . self::RESET . "\n\n";
+        echo $this->buildResultTable($hashing->passwordTimes);
+    }
+
+    private function renderEncryption(EncryptionResult $encryption): void
+    {
+        $this->sectionTitle('Encryption');
+
+        echo '  ' . self::DIM . $encryption->cycles . ' cycles · ms (lower is better)' . self::RESET . "\n\n";
+
+        echo '  ' . self::BOLD . 'Encrypt' . self::RESET . "\n\n";
+        echo $this->buildResultTable($encryption->encryptTimes);
+
+        echo '  ' . self::BOLD . 'Decrypt' . self::RESET . "\n\n";
+        echo $this->buildResultTable($encryption->decryptTimes);
+    }
+
+    private function renderFunctionOverhead(FunctionOverheadResult $functionOverhead): void
+    {
+        $this->sectionTitle('Function Call Overhead');
+
+        echo '  ' . self::DIM . $functionOverhead->cycles . ' cycles · ms (lower is better)' . self::RESET . "\n\n";
+        echo $this->buildResultTable($functionOverhead->callTimes);
+    }
+
+    private function renderTypeCasting(TypeCastingResult $typeCasting): void
+    {
+        $this->sectionTitle('Type Casting');
+
+        echo '  ' . self::DIM . $typeCasting->cycles . ' cycles · ms (lower is better)' . self::RESET . "\n\n";
+        echo $this->buildResultTable($typeCasting->castTimes);
+    }
+
+    private function renderAutoloading(AutoloadingResult $autoloading): void
+    {
+        $this->sectionTitle('Object Instantiation');
+
+        echo '  ' . self::DIM . $autoloading->cycles . ' cycles · ms (lower is better)' . self::RESET . "\n\n";
+        echo $this->buildResultTable($autoloading->instantiationTimes);
+    }
+
+    private function renderCompression(CompressionResult $compression): void
+    {
+        $this->sectionTitle('Compression');
+
+        echo '  ' . self::DIM . $compression->cycles . ' cycles · ms (lower is better)' . self::RESET . "\n\n";
+
+        echo '  ' . self::BOLD . 'Compress' . self::RESET . "\n\n";
+        echo $this->buildResultTable($compression->compressTimes);
+
+        echo '  ' . self::BOLD . 'Decompress' . self::RESET . "\n\n";
+        echo $this->buildResultTable($compression->decompressTimes);
+
+        echo '  ' . self::BOLD . 'Ratio' . self::RESET . "\n\n";
+        /** @var array<string, string> $headers */
+        $headers = [];
+        /** @var array<string, string> $values */
+        $values = [];
+        foreach ($compression->ratios as $name => $ratio) {
+            $headers[$name] = $name;
+            $values[$name] = \sprintf('%.1f%%', $ratio * 100);
+        }
+        echo $this->buildTable($headers, [$values]);
+    }
+
+    private function renderCpu(CpuResult $cpu): void
+    {
+        $this->sectionTitle('CPU');
+
+        echo '  ' . self::DIM . 'ms (lower is better)' . self::RESET . "\n\n";
+
+        echo '  ' . self::BOLD . 'Math' . self::RESET . self::DIM . ' (' . $cpu->mathCount . ' cycles)' . self::RESET . "\n\n";
+        echo $this->buildResultTable($cpu->mathResults);
+
+        echo '  ' . self::BOLD . 'Strings' . self::RESET . self::DIM . ' (' . $cpu->stringCount . ' cycles)' . self::RESET . "\n\n";
+        echo $this->buildResultTable($cpu->stringResults);
+
+        $this->keyValue('Loops', \sprintf('%.2fms', $cpu->loopsResult * 1000) . self::DIM . ' (' . $cpu->loopsCount . ' cycles)');
+        $this->keyValue('If/Else', \sprintf('%.2fms', $cpu->ifElseResult * 1000) . self::DIM . ' (' . $cpu->ifElseCount . ' cycles)');
+        echo "\n";
+    }
+
+    private function renderMySql(MySqlResult $mysql): void
+    {
+        $this->sectionTitle('MySQL');
+
+        $this->keyValue('Version', (string) $mysql->version);
+        $this->keyValue('Query Time', \sprintf('%.2fms', $mysql->queryTime * 1000) . self::DIM . ' (' . $mysql->queryCount . ' cycles, lower is better)');
+        echo "\n";
+    }
+
+    private function renderFooter(BenchmarkResult $result, ?string $reportPath): void
+    {
+        echo self::DIM . \str_repeat('─', self::WIDTH) . self::RESET . "\n";
+        echo '  ' . self::DIM . 'Total Duration  ' . self::RESET . self::GREEN . \sprintf('%.3fs', $result->totalDuration) . self::RESET . "\n";
+        if ($reportPath !== null) {
+            echo '  ' . self::DIM . 'Report saved    ' . self::RESET . self::YELLOW . $reportPath . self::RESET . "\n";
+        }
+        echo self::DIM . \str_repeat('─', self::WIDTH) . self::RESET . "\n\n";
+    }
+
+    private function sectionTitle(string $title): void
+    {
+        $line = \str_repeat('─', self::WIDTH - \mb_strlen($title) - 4);
+        echo "\n" . self::BOLD_CYAN . '── ' . $title . ' ' . $line . self::RESET . "\n\n";
+    }
+
+    private function keyValue(string $key, string $value): void
+    {
+        echo '  ' . self::DIM . \str_pad($key, 16) . self::RESET . self::GREEN . $value . self::RESET . "\n";
+    }
+
+    /**
+     * @param array<string, float> $results seconds
+     */
+    private function buildResultTable(array $results): string
+    {
+        /** @var array<string, string> $headers */
+        $headers = [];
+        /** @var array<string, string> $values */
+        $values = [];
+        foreach ($results as $name => $time) {
+            $headers[$name] = $name;
+            $values[$name] = \sprintf('%.2fms', $time * 1000);
+        }
+
+        return $this->buildTable($headers, [$values]);
+    }
+
+    /**
+     * @param array<string, string> $headers
+     * @param list<array<string, string>> $rows
+     */
+    private function buildTable(array $headers, array $rows): string
+    {
+        // Calculate column widths
+        /** @var array<string, int> $widths */
+        $widths = [];
+        foreach ($headers as $key => $header) {
+            $widths[$key] = \max(\mb_strlen($header), 8);
+            foreach ($rows as $row) {
+                $widths[$key] = \max($widths[$key], \mb_strlen($row[$key] ?? ''));
+            }
+        }
+
+        $output = '';
+        $pad = 1;
+
+        // Top border
+        $output .= '  ' . self::DIM . '┌';
+        $first = true;
+        foreach ($widths as $w) {
+            if (!$first) {
+                $output .= '┬';
+            }
+            $output .= \str_repeat('─', $w + $pad * 2);
+            $first = false;
+        }
+        $output .= '┐' . self::RESET . "\n";
+
+        // Header row
+        $output .= '  ' . self::DIM . '│' . self::RESET;
+        foreach ($headers as $key => $header) {
+            $output .= \str_repeat(' ', $pad) . self::BOLD . \str_pad($header, $widths[$key]) . self::RESET . \str_repeat(' ', $pad) . self::DIM . '│' . self::RESET;
+        }
+        $output .= "\n";
+
+        // Separator
+        $output .= '  ' . self::DIM . '├';
+        $first = true;
+        foreach ($widths as $w) {
+            if (!$first) {
+                $output .= '┼';
+            }
+            $output .= \str_repeat('─', $w + $pad * 2);
+            $first = false;
+        }
+        $output .= '┤' . self::RESET . "\n";
+
+        // Data rows
+        foreach ($rows as $row) {
+            $output .= '  ' . self::DIM . '│' . self::RESET;
+            foreach ($headers as $key => $_) {
+                $output .= \str_repeat(' ', $pad) . self::GREEN . \str_pad($row[$key] ?? '', $widths[$key]) . self::RESET . \str_repeat(' ', $pad) . self::DIM . '│' . self::RESET;
+            }
+            $output .= "\n";
+        }
+
+        // Bottom border
+        $output .= '  ' . self::DIM . '└';
+        $first = true;
+        foreach ($widths as $w) {
+            if (!$first) {
+                $output .= '┴';
+            }
+            $output .= \str_repeat('─', $w + $pad * 2);
+            $first = false;
+        }
+        $output .= '┘' . self::RESET . "\n\n";
+
+        return $output;
+    }
+}
