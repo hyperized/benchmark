@@ -1,55 +1,81 @@
 # PHP benchmark
-[![Build Status](https://scrutinizer-ci.com/g/hyperized/benchmark/badges/build.png?b=master)](https://scrutinizer-ci.com/g/hyperized/benchmark/build-status/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/hyperized/benchmark/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/hyperized/benchmark/?branch=master)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fhyperized%2Fbenchmark.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fhyperized%2Fbenchmark?ref=badge_shield)
 
-Simple PHP server benchmarking.
+[![CI](https://github.com/hyperized/benchmark/actions/workflows/ci.yml/badge.svg)](https://github.com/hyperized/benchmark/actions/workflows/ci.yml)
 
-This tool can help you determine if a hosting environment is suited for your projects in terms of:
-- PHP.ini settings that affect uploads;
-- CPU speed available to your PHP instance;
-- Disk IOPS available to your PHP instance;
-- MySQL query speed;
+Simple PHP server benchmarking utility that tests hosting environment capabilities:
 
-## How to install:
-    composer create-project hyperized/benchmark:dev-master
-    
-Copy the `/config/config.yml.example` to `/config/config.yml` and adjust to your preferences.
-    
-## How to run:
+- **PHP** — version, ini settings (memory, uploads, execution time), loaded extensions
+- **CPU** — math functions, string operations, loops, conditionals
+- **Disk I/O** — file creation across block sizes
+- **MySQL** — query performance
 
-### Locally with CLI
-    php benchmark.php
+Auto-detects CLI vs web and renders with the appropriate output mode:
+- **CLI** — ANSI colors with Unicode box-drawing tables
+- **Web** — styled HTML dashboard with responsive CSS grid layout
 
-### Locally with development server
+Each run saves a JSON report with a timestamp to `reports/`.
 
-    php -S localhost:8000 benchmark.php
-    
-### Remotely
-Install on the server by running composer and visiting the `/benchmark.php` page of the directory the project is installed at.
+## Requirements
+
+- PHP >= 8.4
+- ext-mysqli (for MySQL benchmarks)
+
+## Installation
+
+```bash
+composer create-project hyperized/benchmark:dev-master
+cp config/config.yml.example config/config.yml
+```
+
+Adjust `config/config.yml` to your preferences. Set module toggles, cycle counts, MySQL credentials, and optionally override the output format.
+
+## Usage
+
+### CLI
+
+```bash
+php benchmark.php
+```
+
+### Development server
+
+```bash
+php -S localhost:8000 benchmark.php
+```
+
+### Remote
+
+Install on the server via Composer and visit `/benchmark.php` in the browser.
+
+### Reports
+
+JSON reports are saved to `reports/` with timestamped filenames (e.g. `2026-04-11_143022.json`). Disable via `benchmark.output.report: false` in config.
 
 ### Security
-Note that you might want to add additional security to your server to not expose the config.yml file to your webtraffic.
 
-For Apache with `mod_rewrite` you can use something like this in your `.htaccess` file:
+If deploying to a web server, ensure `config.yml` is not publicly accessible. For Apache with `mod_rewrite`:
 
-    <Files "config.yml">
-        deny from all
-    </Files>
+```apache
+<Files "config.yml">
+    deny from all
+</Files>
+```
+
+## Development
+
+```bash
+composer analyse    # Run PHPStan (level 8)
+composer cs-fix     # Auto-fix code style (PER-CS2.0)
+composer cs-check   # Check code style (dry run)
+```
 
 ## Contribution
-I'm open to improvements and new benchmarks via [pull requests](https://github.com/hyperized/benchmark/pulls)
+
+I'm open to improvements and new benchmarks via [pull requests](https://github.com/hyperized/benchmark/pulls).
 
 Issues can be reported through [Issues](https://github.com/hyperized/benchmark/issues).
 Please include the full output of the script and your config file without the password.
 
-## Credit
-Credit where credit is due:
-
-- https://github.com/odan/benchmark-php
-- https://gist.github.com/RamadhanAmizudin/ca87f7be83c6237bb070
-- https://stackoverflow.com/a/25370978/1757763
-- http://php.net/manual/en/function.rmdir.php#119949
-
-
 ## License
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fhyperized%2Fbenchmark.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fhyperized%2Fbenchmark?ref=badge_large)
+
+MIT
