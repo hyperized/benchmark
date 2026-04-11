@@ -20,7 +20,7 @@ benchmark:
       - github.com
   json:
     enabled: true
-    count: 9999
+    count: 1000
   regex:
     enabled: true
     count: 99999
@@ -29,10 +29,10 @@ benchmark:
     cycles: 100
   serialization:
     enabled: true
-    count: 9999
+    count: 2000
   hashing:
     enabled: true
-    hashCount: 99999
+    hashCount: 9999
     passwordCount: 10
   encryption:
     enabled: true

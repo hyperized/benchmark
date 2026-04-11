@@ -9,7 +9,7 @@ use Hyperized\Benchmark\Result\HashingResult;
 
 class Hashing implements BenchmarkModuleInterface
 {
-    private static int $defaultHashCount = 99999;
+    private static int $defaultHashCount = 9999;
     private static int $defaultPasswordCount = 10;
 
     /** @var list<string> */

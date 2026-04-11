@@ -9,7 +9,7 @@ use Hyperized\Benchmark\Result\JsonResult;
 
 class Json implements BenchmarkModuleInterface
 {
-    private static int $defaultCount = 9999;
+    private static int $defaultCount = 1000;
 
     public function __construct(private readonly Config $config) {}
 
