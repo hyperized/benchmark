@@ -84,7 +84,7 @@ final class Benchmark
         foreach ($enabledModules as $name => $module) {
             $current++;
             if ($isCli) {
-                echo "\r\033[2m  [{$current}/{$total}] Running {$name}...\033[0m\033[K";
+                echo "\r  \033[1;36m[\033[0m\033[32m{$current}\033[2m/\033[0m{$total}\033[1;36m]\033[0m \033[2mRunning\033[0m \033[1m{$name}\033[0m\033[2m...\033[0m\033[K";
             }
             $results[$name] = $module->run();
         }
