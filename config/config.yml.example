@@ -1,5 +1,8 @@
 ---
 benchmark:
+  output:
+    format: ~      # null = auto-detect, 'cli', or 'html'
+    report: true   # save JSON report to reports/
   php:
     enabled: true
   disk:
