@@ -79,12 +79,13 @@ class Memory implements BenchmarkModuleInterface
     private function benchmark(string $name, int $count, array &$times, array &$peaks, callable $fn): void
     {
         \gc_collect_cycles();
-        $memBefore = \memory_get_usage(true);
+        \memory_reset_peak_usage();
+        $memBefore = \memory_get_peak_usage();
 
         $start = \microtime(true);
         $fn($count);
         $times[$name] = \microtime(true) - $start;
 
-        $peaks[$name] = \memory_get_usage(true) - $memBefore;
+        $peaks[$name] = \memory_get_peak_usage() - $memBefore;
     }
 }
