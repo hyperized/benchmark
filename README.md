@@ -41,7 +41,7 @@ All modules can be individually enabled/disabled and configured in `config/confi
 ## Installation
 
 ```bash
-composer create-project hyperized/benchmark:dev-master
+composer create-project hyperized/benchmark
 cp config/config.yml.example config/config.yml
 ```
 
