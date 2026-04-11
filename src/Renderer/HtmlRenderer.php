@@ -8,13 +8,20 @@ use Hyperized\Benchmark\Generic\Size;
 use Hyperized\Benchmark\Result\BenchmarkResult;
 use Hyperized\Benchmark\Result\CpuResult;
 use Hyperized\Benchmark\Result\DiskResult;
+use Hyperized\Benchmark\Result\AutoloadingResult;
+use Hyperized\Benchmark\Result\CompressionResult;
+use Hyperized\Benchmark\Result\EncryptionResult;
 use Hyperized\Benchmark\Result\FileReadResult;
+use Hyperized\Benchmark\Result\FunctionOverheadResult;
+use Hyperized\Benchmark\Result\HashingResult;
 use Hyperized\Benchmark\Result\JsonResult;
 use Hyperized\Benchmark\Result\MemoryResult;
 use Hyperized\Benchmark\Result\MySqlResult;
 use Hyperized\Benchmark\Result\NetworkResult;
 use Hyperized\Benchmark\Result\PhpResult;
 use Hyperized\Benchmark\Result\RegexResult;
+use Hyperized\Benchmark\Result\SerializationResult;
+use Hyperized\Benchmark\Result\TypeCastingResult;
 
 final class HtmlRenderer implements RendererInterface
 {
@@ -52,6 +59,27 @@ final class HtmlRenderer implements RendererInterface
         }
         if ($result->fileRead !== null) {
             $this->renderFileRead($result->fileRead);
+        }
+        if ($result->serialization !== null) {
+            $this->renderSerialization($result->serialization);
+        }
+        if ($result->hashing !== null) {
+            $this->renderHashing($result->hashing);
+        }
+        if ($result->encryption !== null) {
+            $this->renderEncryption($result->encryption);
+        }
+        if ($result->functionOverhead !== null) {
+            $this->renderFunctionOverhead($result->functionOverhead);
+        }
+        if ($result->typeCasting !== null) {
+            $this->renderTypeCasting($result->typeCasting);
+        }
+        if ($result->autoloading !== null) {
+            $this->renderAutoloading($result->autoloading);
+        }
+        if ($result->compression !== null) {
+            $this->renderCompression($result->compression);
         }
         if ($result->cpu !== null) {
             $this->renderCpu($result->cpu);
@@ -151,6 +179,116 @@ final class HtmlRenderer implements RendererInterface
         echo '</tr></thead><tbody><tr>';
         foreach ($memory->peakMemoryUsages as $bytes) {
             echo '<td>' . $this->esc(Size::bytesToFormat($bytes)) . '</td>';
+        }
+        echo '</tr></tbody></table>';
+
+        echo '</div></section>';
+    }
+
+    private function renderSerialization(SerializationResult $serialization): void
+    {
+        echo '<section class="card card-wide">';
+        echo '<div class="card-title">Serialization</div>';
+        echo '<div class="card-body">';
+        echo '<p class="subtitle">' . $serialization->cycles . ' cycles &middot; ms (lower is better)</p>';
+
+        echo '<h3>Serialize</h3>';
+        $this->renderResultTable($serialization->serializeTimes);
+
+        echo '<h3>Unserialize</h3>';
+        $this->renderResultTable($serialization->unserializeTimes);
+
+        echo '</div></section>';
+    }
+
+    private function renderHashing(HashingResult $hashing): void
+    {
+        echo '<section class="card card-wide">';
+        echo '<div class="card-title">Hashing</div>';
+        echo '<div class="card-body">';
+
+        echo '<h3>Hash Functions <small>(' . $hashing->hashCycles . ' cycles)</small></h3>';
+        $this->renderResultTable($hashing->hashTimes);
+
+        echo '<h3>Password Hashing <small>(' . $hashing->passwordCycles . ' cycles)</small></h3>';
+        $this->renderResultTable($hashing->passwordTimes);
+
+        echo '</div></section>';
+    }
+
+    private function renderEncryption(EncryptionResult $encryption): void
+    {
+        echo '<section class="card card-wide">';
+        echo '<div class="card-title">Encryption</div>';
+        echo '<div class="card-body">';
+        echo '<p class="subtitle">' . $encryption->cycles . ' cycles &middot; ms (lower is better)</p>';
+
+        echo '<h3>Encrypt</h3>';
+        $this->renderResultTable($encryption->encryptTimes);
+
+        echo '<h3>Decrypt</h3>';
+        $this->renderResultTable($encryption->decryptTimes);
+
+        echo '</div></section>';
+    }
+
+    private function renderFunctionOverhead(FunctionOverheadResult $functionOverhead): void
+    {
+        echo '<section class="card card-wide">';
+        echo '<div class="card-title">Function Call Overhead</div>';
+        echo '<div class="card-body">';
+        echo '<p class="subtitle">' . $functionOverhead->cycles . ' cycles &middot; ms (lower is better)</p>';
+
+        $this->renderResultTable($functionOverhead->callTimes);
+
+        echo '</div></section>';
+    }
+
+    private function renderTypeCasting(TypeCastingResult $typeCasting): void
+    {
+        echo '<section class="card card-wide">';
+        echo '<div class="card-title">Type Casting</div>';
+        echo '<div class="card-body">';
+        echo '<p class="subtitle">' . $typeCasting->cycles . ' cycles &middot; ms (lower is better)</p>';
+
+        $this->renderResultTable($typeCasting->castTimes);
+
+        echo '</div></section>';
+    }
+
+    private function renderAutoloading(AutoloadingResult $autoloading): void
+    {
+        echo '<section class="card card-wide">';
+        echo '<div class="card-title">Object Instantiation</div>';
+        echo '<div class="card-body">';
+        echo '<p class="subtitle">' . $autoloading->cycles . ' cycles &middot; ms (lower is better)</p>';
+
+        $this->renderResultTable($autoloading->instantiationTimes);
+
+        echo '</div></section>';
+    }
+
+    private function renderCompression(CompressionResult $compression): void
+    {
+        echo '<section class="card card-wide">';
+        echo '<div class="card-title">Compression</div>';
+        echo '<div class="card-body">';
+        echo '<p class="subtitle">' . $compression->cycles . ' cycles &middot; ms (lower is better)</p>';
+
+        echo '<h3>Compress</h3>';
+        $this->renderResultTable($compression->compressTimes);
+
+        echo '<h3>Decompress</h3>';
+        $this->renderResultTable($compression->decompressTimes);
+
+        echo '<h3>Ratio</h3>';
+        echo '<table><thead><tr>';
+        foreach (\array_keys($compression->ratios) as $name) {
+            echo '<th>' . $this->esc($name) . '</th>';
+        }
+        echo '</tr></thead><tbody><tr>';
+        foreach ($compression->ratios as $ratio) {
+            echo '<td>' . \sprintf('%.1f%%', $ratio * 100) . '</td>';
         }
         echo '</tr></tbody></table>';
 

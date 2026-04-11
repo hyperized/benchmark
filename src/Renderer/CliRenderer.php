@@ -8,13 +8,20 @@ use Hyperized\Benchmark\Generic\Size;
 use Hyperized\Benchmark\Result\BenchmarkResult;
 use Hyperized\Benchmark\Result\CpuResult;
 use Hyperized\Benchmark\Result\DiskResult;
+use Hyperized\Benchmark\Result\AutoloadingResult;
+use Hyperized\Benchmark\Result\CompressionResult;
+use Hyperized\Benchmark\Result\EncryptionResult;
 use Hyperized\Benchmark\Result\FileReadResult;
+use Hyperized\Benchmark\Result\FunctionOverheadResult;
+use Hyperized\Benchmark\Result\HashingResult;
 use Hyperized\Benchmark\Result\JsonResult;
 use Hyperized\Benchmark\Result\MemoryResult;
 use Hyperized\Benchmark\Result\MySqlResult;
 use Hyperized\Benchmark\Result\NetworkResult;
-use Hyperized\Benchmark\Result\RegexResult;
 use Hyperized\Benchmark\Result\PhpResult;
+use Hyperized\Benchmark\Result\RegexResult;
+use Hyperized\Benchmark\Result\SerializationResult;
+use Hyperized\Benchmark\Result\TypeCastingResult;
 
 final class CliRenderer implements RendererInterface
 {
@@ -52,6 +59,27 @@ final class CliRenderer implements RendererInterface
         }
         if ($result->fileRead !== null) {
             $this->renderFileRead($result->fileRead);
+        }
+        if ($result->serialization !== null) {
+            $this->renderSerialization($result->serialization);
+        }
+        if ($result->hashing !== null) {
+            $this->renderHashing($result->hashing);
+        }
+        if ($result->encryption !== null) {
+            $this->renderEncryption($result->encryption);
+        }
+        if ($result->functionOverhead !== null) {
+            $this->renderFunctionOverhead($result->functionOverhead);
+        }
+        if ($result->typeCasting !== null) {
+            $this->renderTypeCasting($result->typeCasting);
+        }
+        if ($result->autoloading !== null) {
+            $this->renderAutoloading($result->autoloading);
+        }
+        if ($result->compression !== null) {
+            $this->renderCompression($result->compression);
         }
         if ($result->cpu !== null) {
             $this->renderCpu($result->cpu);
@@ -180,6 +208,91 @@ final class CliRenderer implements RendererInterface
         echo '  ' . self::DIM . $fileRead->cycles . ' cycles · ms (lower is better)' . self::RESET . "\n\n";
 
         echo $this->buildResultTable($fileRead->readTimes);
+    }
+
+    private function renderSerialization(SerializationResult $serialization): void
+    {
+        $this->sectionTitle('Serialization');
+
+        echo '  ' . self::DIM . $serialization->cycles . ' cycles · ms (lower is better)' . self::RESET . "\n\n";
+
+        echo '  ' . self::BOLD . 'Serialize' . self::RESET . "\n\n";
+        echo $this->buildResultTable($serialization->serializeTimes);
+
+        echo '  ' . self::BOLD . 'Unserialize' . self::RESET . "\n\n";
+        echo $this->buildResultTable($serialization->unserializeTimes);
+    }
+
+    private function renderHashing(HashingResult $hashing): void
+    {
+        $this->sectionTitle('Hashing');
+
+        echo '  ' . self::BOLD . 'Hash Functions' . self::RESET . self::DIM . ' (' . $hashing->hashCycles . ' cycles, ms, lower is better)' . self::RESET . "\n\n";
+        echo $this->buildResultTable($hashing->hashTimes);
+
+        echo '  ' . self::BOLD . 'Password Hashing' . self::RESET . self::DIM . ' (' . $hashing->passwordCycles . ' cycles, ms, lower is better)' . self::RESET . "\n\n";
+        echo $this->buildResultTable($hashing->passwordTimes);
+    }
+
+    private function renderEncryption(EncryptionResult $encryption): void
+    {
+        $this->sectionTitle('Encryption');
+
+        echo '  ' . self::DIM . $encryption->cycles . ' cycles · ms (lower is better)' . self::RESET . "\n\n";
+
+        echo '  ' . self::BOLD . 'Encrypt' . self::RESET . "\n\n";
+        echo $this->buildResultTable($encryption->encryptTimes);
+
+        echo '  ' . self::BOLD . 'Decrypt' . self::RESET . "\n\n";
+        echo $this->buildResultTable($encryption->decryptTimes);
+    }
+
+    private function renderFunctionOverhead(FunctionOverheadResult $functionOverhead): void
+    {
+        $this->sectionTitle('Function Call Overhead');
+
+        echo '  ' . self::DIM . $functionOverhead->cycles . ' cycles · ms (lower is better)' . self::RESET . "\n\n";
+        echo $this->buildResultTable($functionOverhead->callTimes);
+    }
+
+    private function renderTypeCasting(TypeCastingResult $typeCasting): void
+    {
+        $this->sectionTitle('Type Casting');
+
+        echo '  ' . self::DIM . $typeCasting->cycles . ' cycles · ms (lower is better)' . self::RESET . "\n\n";
+        echo $this->buildResultTable($typeCasting->castTimes);
+    }
+
+    private function renderAutoloading(AutoloadingResult $autoloading): void
+    {
+        $this->sectionTitle('Object Instantiation');
+
+        echo '  ' . self::DIM . $autoloading->cycles . ' cycles · ms (lower is better)' . self::RESET . "\n\n";
+        echo $this->buildResultTable($autoloading->instantiationTimes);
+    }
+
+    private function renderCompression(CompressionResult $compression): void
+    {
+        $this->sectionTitle('Compression');
+
+        echo '  ' . self::DIM . $compression->cycles . ' cycles · ms (lower is better)' . self::RESET . "\n\n";
+
+        echo '  ' . self::BOLD . 'Compress' . self::RESET . "\n\n";
+        echo $this->buildResultTable($compression->compressTimes);
+
+        echo '  ' . self::BOLD . 'Decompress' . self::RESET . "\n\n";
+        echo $this->buildResultTable($compression->decompressTimes);
+
+        echo '  ' . self::BOLD . 'Ratio' . self::RESET . "\n\n";
+        /** @var array<string, string> $headers */
+        $headers = [];
+        /** @var array<string, string> $values */
+        $values = [];
+        foreach ($compression->ratios as $name => $ratio) {
+            $headers[$name] = $name;
+            $values[$name] = \sprintf('%.1f%%', $ratio * 100);
+        }
+        echo $this->buildTable($headers, [$values]);
     }
 
     private function renderCpu(CpuResult $cpu): void
