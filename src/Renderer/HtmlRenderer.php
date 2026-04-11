@@ -430,110 +430,178 @@ final class HtmlRenderer implements RendererInterface
         return <<<'CSS'
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: #f0f2f5;
-            color: #1a1a2e;
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #1a1f2e;
+            color: #c8ccd4;
             line-height: 1.6;
+            min-height: 100vh;
         }
         .banner {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #fff;
-            padding: 2rem;
+            background: linear-gradient(160deg, #1e2536 0%, #1a1f2e 50%, #1c2233 100%);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.1);
+            color: #e2e8f0;
+            padding: 3rem 2rem 2.5rem;
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
-        .banner h1 { font-size: 1.8rem; font-weight: 600; }
-        .banner .meta { margin-top: 0.5rem; opacity: 0.8; display: flex; justify-content: center; gap: 2rem; }
-        .banner .duration { font-family: "SF Mono", "Cascadia Code", monospace; color: #4ecca3; }
+        .banner::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.5), transparent);
+        }
+        .banner h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #f1f5f9;
+        }
+        .banner .meta {
+            margin-top: 0.75rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+        .banner .duration {
+            font-family: "JetBrains Mono", "SF Mono", "Cascadia Code", monospace;
+            color: #38bdf8;
+            font-weight: 500;
+        }
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 1.5rem;
-            padding: 2rem;
-            max-width: 1400px;
+            grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+            gap: 1rem;
+            padding: 1.5rem;
+            max-width: 1440px;
             margin: 0 auto;
         }
         .card {
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            background: #232a3b;
+            border: 1px solid #2e3648;
+            border-radius: 10px;
             overflow: hidden;
+            transition: border-color 0.2s ease;
         }
+        .card:hover { border-color: #3a4358; }
         .card-wide { grid-column: 1 / -1; }
         .card-title {
-            background: #1a1a2e;
-            color: #4ecca3;
-            padding: 0.75rem 1.25rem;
+            background: linear-gradient(180deg, #283044 0%, #232a3b 100%);
+            border-bottom: 1px solid #2e3648;
+            color: #38bdf8;
+            padding: 0.7rem 1.25rem;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .card-body { padding: 1.25rem; }
+        .card-body h3 {
+            margin: 1.25rem 0 0.5rem;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
-        .card-body { padding: 1.25rem; }
-        .card-body h3 { margin: 1rem 0 0.5rem; color: #16213e; font-size: 0.95rem; }
-        .card-body h3 small { color: #888; font-weight: 400; }
+        .card-body h3 small { color: #475569; font-weight: 400; text-transform: none; letter-spacing: 0; }
         .card-body h3:first-child { margin-top: 0; }
-        dl.kv { display: grid; grid-template-columns: auto 1fr; gap: 0.3rem 1rem; }
-        dl.kv dt { color: #666; font-size: 0.9rem; }
-        dl.kv dd { font-family: "SF Mono", "Cascadia Code", monospace; font-size: 0.9rem; color: #1a1a2e; }
+        dl.kv { display: grid; grid-template-columns: auto 1fr; gap: 0.4rem 1.25rem; }
+        dl.kv dt { color: #64748b; font-size: 0.85rem; }
+        dl.kv dd {
+            font-family: "JetBrains Mono", "SF Mono", "Cascadia Code", monospace;
+            font-size: 0.85rem;
+            color: #e2e8f0;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
             margin: 0.5rem 0 1rem;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
         table th {
-            background: #f0f2f5;
-            padding: 0.5rem 0.75rem;
+            background: #1e2536;
+            padding: 0.55rem 0.75rem;
             text-align: left;
             font-weight: 600;
-            color: #16213e;
-            border-bottom: 2px solid #ddd;
+            color: #94a3b8;
+            border-bottom: 1px solid #2e3648;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
         }
         table td {
-            padding: 0.5rem 0.75rem;
-            border-bottom: 1px solid #eee;
-            font-family: "SF Mono", "Cascadia Code", monospace;
-            color: #2d6a4f;
+            padding: 0.55rem 0.75rem;
+            border-bottom: 1px solid #2a3140;
+            font-family: "JetBrains Mono", "SF Mono", "Cascadia Code", monospace;
+            color: #4ade80;
+            font-size: 0.8rem;
         }
         table tr:last-child td { border-bottom: none; }
-        .subtitle { color: #888; font-size: 0.9rem; margin-bottom: 0.75rem; }
+        table tr:hover td { background: rgba(56, 189, 248, 0.03); }
+        .subtitle {
+            color: #475569;
+            font-size: 0.8rem;
+            margin-bottom: 0.75rem;
+        }
         details { margin-top: 1rem; }
         summary {
             cursor: pointer;
-            color: #16213e;
+            color: #94a3b8;
             font-weight: 500;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             padding: 0.3rem 0;
+            transition: color 0.15s;
         }
+        summary:hover { color: #e2e8f0; }
         .ext-list {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.4rem;
+            gap: 0.35rem;
             margin-top: 0.5rem;
         }
         .ext {
-            background: #f0f2f5;
-            padding: 0.2rem 0.6rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-family: "SF Mono", "Cascadia Code", monospace;
+            background: #2a3140;
+            border: 1px solid #353e50;
+            padding: 0.15rem 0.5rem;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            font-family: "JetBrains Mono", "SF Mono", "Cascadia Code", monospace;
+            color: #c8ccd4;
+            transition: border-color 0.15s;
         }
-        .ext small { color: #888; }
+        .ext:hover { border-color: #38bdf8; }
+        .ext small { color: #475569; }
         footer {
             text-align: center;
             padding: 1.5rem 2rem;
-            color: #888;
-            font-size: 0.85rem;
+            color: #475569;
+            font-size: 0.8rem;
             display: flex;
             justify-content: center;
             gap: 2rem;
+            border-top: 1px solid #2a3140;
+            margin-top: 0.5rem;
         }
-        footer strong { color: #1a1a2e; }
-        footer code { background: #f0f2f5; padding: 0.1rem 0.4rem; border-radius: 3px; }
+        footer strong { color: #94a3b8; }
+        footer code {
+            background: #2a3140;
+            border: 1px solid #353e50;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-family: "JetBrains Mono", "SF Mono", "Cascadia Code", monospace;
+            color: #94a3b8;
+        }
         @media (max-width: 600px) {
-            .grid { grid-template-columns: 1fr; padding: 1rem; gap: 1rem; }
-            .banner { padding: 1.5rem 1rem; }
-            .banner h1 { font-size: 1.4rem; }
+            .grid { grid-template-columns: 1fr; padding: 1rem; gap: 0.75rem; }
+            .banner { padding: 2rem 1rem 1.5rem; }
+            .banner h1 { font-size: 1.3rem; }
             footer { flex-direction: column; gap: 0.5rem; }
         }
         CSS;
