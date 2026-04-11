@@ -8,6 +8,7 @@ use Hyperized\Benchmark\Generic\Size;
 use Hyperized\Benchmark\Result\BenchmarkResult;
 use Hyperized\Benchmark\Result\CpuResult;
 use Hyperized\Benchmark\Result\DiskResult;
+use Hyperized\Benchmark\Result\MemoryResult;
 use Hyperized\Benchmark\Result\MySqlResult;
 use Hyperized\Benchmark\Result\PhpResult;
 
@@ -32,6 +33,9 @@ final class HtmlRenderer implements RendererInterface
         }
         if ($result->disk !== null) {
             $this->renderDisk($result->disk);
+        }
+        if ($result->memory !== null) {
+            $this->renderMemory($result->memory);
         }
         if ($result->cpu !== null) {
             $this->renderCpu($result->cpu);
@@ -99,6 +103,38 @@ final class HtmlRenderer implements RendererInterface
         echo '</tr></thead><tbody><tr>';
         foreach ($disk->fileCreationTimes as $time) {
             echo '<td>' . \sprintf('%.4fs', $time) . '</td>';
+        }
+        echo '</tr></tbody></table>';
+
+        echo '</div></section>';
+    }
+
+    private function renderMemory(MemoryResult $memory): void
+    {
+        echo '<section class="card card-wide">';
+        echo '<div class="card-title">Memory</div>';
+        echo '<div class="card-body">';
+        echo '<p class="subtitle">' . $memory->cycles . ' cycles &middot; seconds (lower is better)</p>';
+
+        echo '<h3>Time</h3>';
+        echo '<table><thead><tr>';
+        foreach (\array_keys($memory->allocationTimes) as $name) {
+            echo '<th>' . $this->esc($name) . '</th>';
+        }
+        echo '</tr></thead><tbody><tr>';
+        foreach ($memory->allocationTimes as $time) {
+            echo '<td>' . \sprintf('%.4fs', $time) . '</td>';
+        }
+        echo '</tr></tbody></table>';
+
+        echo '<h3>Peak Memory</h3>';
+        echo '<table><thead><tr>';
+        foreach (\array_keys($memory->peakMemoryUsages) as $name) {
+            echo '<th>' . $this->esc($name) . '</th>';
+        }
+        echo '</tr></thead><tbody><tr>';
+        foreach ($memory->peakMemoryUsages as $bytes) {
+            echo '<td>' . $this->esc(Size::bytesToFormat($bytes)) . '</td>';
         }
         echo '</tr></tbody></table>';
 

@@ -12,6 +12,7 @@ final readonly class BenchmarkResult implements \JsonSerializable
         public ?PhpResult $php,
         public ?CpuResult $cpu,
         public ?DiskResult $disk,
+        public ?MemoryResult $memory,
         public ?MySqlResult $mysql,
     ) {}
 
@@ -33,6 +34,9 @@ final readonly class BenchmarkResult implements \JsonSerializable
         }
         if ($this->disk !== null) {
             $data['disk'] = $this->disk;
+        }
+        if ($this->memory !== null) {
+            $data['memory'] = $this->memory;
         }
         if ($this->mysql !== null) {
             $data['mysql'] = $this->mysql;

@@ -8,6 +8,9 @@ benchmark:
   disk:
     enabled: true
     cycles: 100
+  memory:
+    enabled: true
+    count: 9999
   cpu:
     enabled: true
     math:

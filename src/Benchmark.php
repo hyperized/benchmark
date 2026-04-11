@@ -7,6 +7,7 @@ namespace Hyperized\Benchmark;
 use Hyperized\Benchmark\Config\Config;
 use Hyperized\Benchmark\Modules\CPU;
 use Hyperized\Benchmark\Modules\Disk;
+use Hyperized\Benchmark\Modules\Memory;
 use Hyperized\Benchmark\Modules\MySQL;
 use Hyperized\Benchmark\Modules\PHP;
 use Hyperized\Benchmark\Renderer\CliRenderer;
@@ -22,6 +23,7 @@ final class Benchmark
         private readonly PHP $php,
         private readonly CPU $cpu,
         private readonly Disk $disk,
+        private readonly Memory $memory,
         private readonly MySQL $mysql,
         private readonly ReportWriter $reportWriter,
     ) {}
@@ -33,6 +35,7 @@ final class Benchmark
 
         $phpResult = $this->php->isEnabled() ? $this->php->run() : null;
         $diskResult = $this->disk->isEnabled() ? $this->disk->run() : null;
+        $memoryResult = $this->memory->isEnabled() ? $this->memory->run() : null;
         $cpuResult = $this->cpu->isEnabled() ? $this->cpu->run() : null;
         $mysqlResult = $this->mysql->isEnabled() ? $this->mysql->run() : null;
 
@@ -42,6 +45,7 @@ final class Benchmark
             php: $phpResult,
             cpu: $cpuResult,
             disk: $diskResult,
+            memory: $memoryResult,
             mysql: $mysqlResult,
         );
 

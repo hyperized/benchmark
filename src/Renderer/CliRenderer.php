@@ -8,6 +8,7 @@ use Hyperized\Benchmark\Generic\Size;
 use Hyperized\Benchmark\Result\BenchmarkResult;
 use Hyperized\Benchmark\Result\CpuResult;
 use Hyperized\Benchmark\Result\DiskResult;
+use Hyperized\Benchmark\Result\MemoryResult;
 use Hyperized\Benchmark\Result\MySqlResult;
 use Hyperized\Benchmark\Result\PhpResult;
 
@@ -32,6 +33,9 @@ final class CliRenderer implements RendererInterface
         }
         if ($result->disk !== null) {
             $this->renderDisk($result->disk);
+        }
+        if ($result->memory !== null) {
+            $this->renderMemory($result->memory);
         }
         if ($result->cpu !== null) {
             $this->renderCpu($result->cpu);
@@ -87,6 +91,31 @@ final class CliRenderer implements RendererInterface
         }
 
         echo $this->buildTable($headers, [$values]);
+    }
+
+    private function renderMemory(MemoryResult $memory): void
+    {
+        $this->sectionTitle('Memory');
+
+        echo '  ' . self::DIM . $memory->cycles . ' cycles · seconds (lower is better)' . self::RESET . "\n\n";
+
+        /** @var array<string, string> $timeHeaders */
+        $timeHeaders = [];
+        /** @var array<string, string> $timeValues */
+        $timeValues = [];
+        /** @var array<string, string> $peakValues */
+        $peakValues = [];
+        foreach ($memory->allocationTimes as $name => $time) {
+            $timeHeaders[$name] = $name;
+            $timeValues[$name] = \sprintf('%.4fs', $time);
+            $peakValues[$name] = Size::bytesToFormat($memory->peakMemoryUsages[$name]);
+        }
+
+        echo '  ' . self::BOLD . 'Time' . self::RESET . "\n\n";
+        echo $this->buildTable($timeHeaders, [$timeValues]);
+
+        echo '  ' . self::BOLD . 'Peak Memory' . self::RESET . "\n\n";
+        echo $this->buildTable($timeHeaders, [$peakValues]);
     }
 
     private function renderCpu(CpuResult $cpu): void
