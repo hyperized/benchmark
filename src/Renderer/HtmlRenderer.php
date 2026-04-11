@@ -8,9 +8,13 @@ use Hyperized\Benchmark\Generic\Size;
 use Hyperized\Benchmark\Result\BenchmarkResult;
 use Hyperized\Benchmark\Result\CpuResult;
 use Hyperized\Benchmark\Result\DiskResult;
+use Hyperized\Benchmark\Result\FileReadResult;
+use Hyperized\Benchmark\Result\JsonResult;
 use Hyperized\Benchmark\Result\MemoryResult;
 use Hyperized\Benchmark\Result\MySqlResult;
+use Hyperized\Benchmark\Result\NetworkResult;
 use Hyperized\Benchmark\Result\PhpResult;
+use Hyperized\Benchmark\Result\RegexResult;
 
 final class HtmlRenderer implements RendererInterface
 {
@@ -36,6 +40,18 @@ final class HtmlRenderer implements RendererInterface
         }
         if ($result->memory !== null) {
             $this->renderMemory($result->memory);
+        }
+        if ($result->network !== null) {
+            $this->renderNetwork($result->network);
+        }
+        if ($result->json !== null) {
+            $this->renderJson($result->json);
+        }
+        if ($result->regex !== null) {
+            $this->renderRegex($result->regex);
+        }
+        if ($result->fileRead !== null) {
+            $this->renderFileRead($result->fileRead);
         }
         if ($result->cpu !== null) {
             $this->renderCpu($result->cpu);
@@ -94,7 +110,7 @@ final class HtmlRenderer implements RendererInterface
         echo '<section class="card card-wide">';
         echo '<div class="card-title">Disk I/O</div>';
         echo '<div class="card-body">';
-        echo '<p class="subtitle">' . $disk->cycles . ' cycles &middot; seconds (lower is better)</p>';
+        echo '<p class="subtitle">' . $disk->cycles . ' cycles &middot; ms (lower is better)</p>';
 
         echo '<table><thead><tr>';
         foreach ($disk->fileCreationTimes as $blockSize => $_) {
@@ -102,7 +118,7 @@ final class HtmlRenderer implements RendererInterface
         }
         echo '</tr></thead><tbody><tr>';
         foreach ($disk->fileCreationTimes as $time) {
-            echo '<td>' . \sprintf('%.4fs', $time) . '</td>';
+            echo '<td>' . \sprintf('%.2fms', $time * 1000) . '</td>';
         }
         echo '</tr></tbody></table>';
 
@@ -114,7 +130,7 @@ final class HtmlRenderer implements RendererInterface
         echo '<section class="card card-wide">';
         echo '<div class="card-title">Memory</div>';
         echo '<div class="card-body">';
-        echo '<p class="subtitle">' . $memory->cycles . ' cycles &middot; seconds (lower is better)</p>';
+        echo '<p class="subtitle">' . $memory->cycles . ' cycles &middot; ms (lower is better)</p>';
 
         echo '<h3>Time</h3>';
         echo '<table><thead><tr>';
@@ -123,7 +139,7 @@ final class HtmlRenderer implements RendererInterface
         }
         echo '</tr></thead><tbody><tr>';
         foreach ($memory->allocationTimes as $time) {
-            echo '<td>' . \sprintf('%.4fs', $time) . '</td>';
+            echo '<td>' . \sprintf('%.2fms', $time * 1000) . '</td>';
         }
         echo '</tr></tbody></table>';
 
@@ -147,7 +163,7 @@ final class HtmlRenderer implements RendererInterface
         echo '<div class="card-title">CPU</div>';
         echo '<div class="card-body">';
 
-        echo '<p class="subtitle">seconds (lower is better)</p>';
+        echo '<p class="subtitle">ms (lower is better)</p>';
 
         echo '<h3>Math <small>(' . $cpu->mathCount . ' cycles)</small></h3>';
         $this->renderResultTable($cpu->mathResults);
@@ -156,8 +172,8 @@ final class HtmlRenderer implements RendererInterface
         $this->renderResultTable($cpu->stringResults);
 
         echo '<dl class="kv">';
-        $this->dt('Loops', \sprintf('%.6fs', $cpu->loopsResult) . ' (' . $cpu->loopsCount . ' cycles)');
-        $this->dt('If/Else', \sprintf('%.6fs', $cpu->ifElseResult) . ' (' . $cpu->ifElseCount . ' cycles)');
+        $this->dt('Loops', \sprintf('%.2fms', $cpu->loopsResult * 1000) . ' (' . $cpu->loopsCount . ' cycles)');
+        $this->dt('If/Else', \sprintf('%.2fms', $cpu->ifElseResult * 1000) . ' (' . $cpu->ifElseCount . ' cycles)');
         echo '</dl>';
 
         echo '</div></section>';
@@ -170,7 +186,7 @@ final class HtmlRenderer implements RendererInterface
         echo '<div class="card-body">';
         echo '<dl class="kv">';
         $this->dt('Version', (string) $mysql->version);
-        $this->dt('Query Time', \sprintf('%.4fs', $mysql->queryTime) . ' (' . $mysql->queryCount . ' cycles, lower is better)');
+        $this->dt('Query Time', \sprintf('%.2fms', $mysql->queryTime * 1000) . ' (' . $mysql->queryCount . ' cycles, lower is better)');
         echo '</dl>';
         echo '</div></section>';
     }
@@ -185,6 +201,66 @@ final class HtmlRenderer implements RendererInterface
         echo '</footer>';
     }
 
+    private function renderNetwork(NetworkResult $network): void
+    {
+        echo '<section class="card card-wide">';
+        echo '<div class="card-title">Network</div>';
+        echo '<div class="card-body">';
+        echo '<p class="subtitle">' . $network->cycles . ' cycles &middot; average ms per cycle (lower is better)</p>';
+
+        echo '<h3>DNS Resolution</h3>';
+        $this->renderResultTable($network->dnsResolutionTimes);
+
+        echo '<h3>TCP Connection</h3>';
+        $this->renderResultTable($network->connectionTimes);
+
+        echo '</div></section>';
+    }
+
+    private function renderJson(JsonResult $json): void
+    {
+        echo '<section class="card card-wide">';
+        echo '<div class="card-title">JSON</div>';
+        echo '<div class="card-body">';
+        echo '<p class="subtitle">' . $json->cycles . ' cycles &middot; ms (lower is better)</p>';
+
+        echo '<h3>Encode</h3>';
+        $this->renderResultTable($json->encodeTimes);
+
+        echo '<h3>Decode</h3>';
+        $this->renderResultTable($json->decodeTimes);
+
+        echo '</div></section>';
+    }
+
+    private function renderRegex(RegexResult $regex): void
+    {
+        echo '<section class="card card-wide">';
+        echo '<div class="card-title">Regex</div>';
+        echo '<div class="card-body">';
+        echo '<p class="subtitle">' . $regex->cycles . ' cycles &middot; ms (lower is better)</p>';
+
+        echo '<h3>Match</h3>';
+        $this->renderResultTable($regex->matchTimes);
+
+        echo '<h3>Replace</h3>';
+        $this->renderResultTable($regex->replaceTimes);
+
+        echo '</div></section>';
+    }
+
+    private function renderFileRead(FileReadResult $fileRead): void
+    {
+        echo '<section class="card card-wide">';
+        echo '<div class="card-title">File Read</div>';
+        echo '<div class="card-body">';
+        echo '<p class="subtitle">' . $fileRead->cycles . ' cycles &middot; ms (lower is better)</p>';
+
+        $this->renderResultTable($fileRead->readTimes);
+
+        echo '</div></section>';
+    }
+
     /**
      * @param array<string, float> $results
      */
@@ -196,7 +272,7 @@ final class HtmlRenderer implements RendererInterface
         }
         echo '</tr></thead><tbody><tr>';
         foreach ($results as $time) {
-            echo '<td>' . \sprintf('%.4fs', $time) . '</td>';
+            echo '<td>' . \sprintf('%.2fms', $time * 1000) . '</td>';
         }
         echo '</tr></tbody></table>';
     }

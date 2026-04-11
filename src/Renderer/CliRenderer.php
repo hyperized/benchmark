@@ -8,8 +8,12 @@ use Hyperized\Benchmark\Generic\Size;
 use Hyperized\Benchmark\Result\BenchmarkResult;
 use Hyperized\Benchmark\Result\CpuResult;
 use Hyperized\Benchmark\Result\DiskResult;
+use Hyperized\Benchmark\Result\FileReadResult;
+use Hyperized\Benchmark\Result\JsonResult;
 use Hyperized\Benchmark\Result\MemoryResult;
 use Hyperized\Benchmark\Result\MySqlResult;
+use Hyperized\Benchmark\Result\NetworkResult;
+use Hyperized\Benchmark\Result\RegexResult;
 use Hyperized\Benchmark\Result\PhpResult;
 
 final class CliRenderer implements RendererInterface
@@ -36,6 +40,18 @@ final class CliRenderer implements RendererInterface
         }
         if ($result->memory !== null) {
             $this->renderMemory($result->memory);
+        }
+        if ($result->network !== null) {
+            $this->renderNetwork($result->network);
+        }
+        if ($result->json !== null) {
+            $this->renderJson($result->json);
+        }
+        if ($result->regex !== null) {
+            $this->renderRegex($result->regex);
+        }
+        if ($result->fileRead !== null) {
+            $this->renderFileRead($result->fileRead);
         }
         if ($result->cpu !== null) {
             $this->renderCpu($result->cpu);
@@ -78,7 +94,7 @@ final class CliRenderer implements RendererInterface
         $this->sectionTitle('Disk I/O');
 
         echo '  ' . self::DIM . 'Cycles: ' . self::RESET . self::GREEN . $disk->cycles . self::RESET . "\n";
-        echo '  ' . self::DIM . 'Time in seconds (lower is better)' . self::RESET . "\n\n";
+        echo '  ' . self::DIM . 'ms (lower is better)' . self::RESET . "\n\n";
 
         /** @var array<string, string> $headers */
         $headers = [];
@@ -87,7 +103,7 @@ final class CliRenderer implements RendererInterface
         foreach ($disk->fileCreationTimes as $blockSize => $time) {
             $label = Size::bytesToFormat($blockSize);
             $headers[$label] = $label;
-            $values[$label] = \sprintf('%.4fs', $time);
+            $values[$label] = \sprintf('%.2fms', $time * 1000);
         }
 
         echo $this->buildTable($headers, [$values]);
@@ -97,7 +113,7 @@ final class CliRenderer implements RendererInterface
     {
         $this->sectionTitle('Memory');
 
-        echo '  ' . self::DIM . $memory->cycles . ' cycles · seconds (lower is better)' . self::RESET . "\n\n";
+        echo '  ' . self::DIM . $memory->cycles . ' cycles · ms (lower is better)' . self::RESET . "\n\n";
 
         /** @var array<string, string> $timeHeaders */
         $timeHeaders = [];
@@ -107,7 +123,7 @@ final class CliRenderer implements RendererInterface
         $peakValues = [];
         foreach ($memory->allocationTimes as $name => $time) {
             $timeHeaders[$name] = $name;
-            $timeValues[$name] = \sprintf('%.4fs', $time);
+            $timeValues[$name] = \sprintf('%.2fms', $time * 1000);
             $peakValues[$name] = Size::bytesToFormat($memory->peakMemoryUsages[$name]);
         }
 
@@ -118,11 +134,59 @@ final class CliRenderer implements RendererInterface
         echo $this->buildTable($timeHeaders, [$peakValues]);
     }
 
+    private function renderNetwork(NetworkResult $network): void
+    {
+        $this->sectionTitle('Network');
+
+        echo '  ' . self::DIM . $network->cycles . ' cycles · average ms per cycle (lower is better)' . self::RESET . "\n\n";
+
+        echo '  ' . self::BOLD . 'DNS Resolution' . self::RESET . "\n\n";
+        echo $this->buildResultTable($network->dnsResolutionTimes);
+
+        echo '  ' . self::BOLD . 'TCP Connection' . self::RESET . "\n\n";
+        echo $this->buildResultTable($network->connectionTimes);
+    }
+
+    private function renderJson(JsonResult $json): void
+    {
+        $this->sectionTitle('JSON');
+
+        echo '  ' . self::DIM . $json->cycles . ' cycles · ms (lower is better)' . self::RESET . "\n\n";
+
+        echo '  ' . self::BOLD . 'Encode' . self::RESET . "\n\n";
+        echo $this->buildResultTable($json->encodeTimes);
+
+        echo '  ' . self::BOLD . 'Decode' . self::RESET . "\n\n";
+        echo $this->buildResultTable($json->decodeTimes);
+    }
+
+    private function renderRegex(RegexResult $regex): void
+    {
+        $this->sectionTitle('Regex');
+
+        echo '  ' . self::DIM . $regex->cycles . ' cycles · ms (lower is better)' . self::RESET . "\n\n";
+
+        echo '  ' . self::BOLD . 'Match' . self::RESET . "\n\n";
+        echo $this->buildResultTable($regex->matchTimes);
+
+        echo '  ' . self::BOLD . 'Replace' . self::RESET . "\n\n";
+        echo $this->buildResultTable($regex->replaceTimes);
+    }
+
+    private function renderFileRead(FileReadResult $fileRead): void
+    {
+        $this->sectionTitle('File Read');
+
+        echo '  ' . self::DIM . $fileRead->cycles . ' cycles · ms (lower is better)' . self::RESET . "\n\n";
+
+        echo $this->buildResultTable($fileRead->readTimes);
+    }
+
     private function renderCpu(CpuResult $cpu): void
     {
         $this->sectionTitle('CPU');
 
-        echo '  ' . self::DIM . 'Time in seconds (lower is better)' . self::RESET . "\n\n";
+        echo '  ' . self::DIM . 'ms (lower is better)' . self::RESET . "\n\n";
 
         echo '  ' . self::BOLD . 'Math' . self::RESET . self::DIM . ' (' . $cpu->mathCount . ' cycles)' . self::RESET . "\n\n";
         echo $this->buildResultTable($cpu->mathResults);
@@ -130,8 +194,8 @@ final class CliRenderer implements RendererInterface
         echo '  ' . self::BOLD . 'Strings' . self::RESET . self::DIM . ' (' . $cpu->stringCount . ' cycles)' . self::RESET . "\n\n";
         echo $this->buildResultTable($cpu->stringResults);
 
-        $this->keyValue('Loops', \sprintf('%.6fs', $cpu->loopsResult) . self::DIM . ' (' . $cpu->loopsCount . ' cycles)');
-        $this->keyValue('If/Else', \sprintf('%.6fs', $cpu->ifElseResult) . self::DIM . ' (' . $cpu->ifElseCount . ' cycles)');
+        $this->keyValue('Loops', \sprintf('%.2fms', $cpu->loopsResult * 1000) . self::DIM . ' (' . $cpu->loopsCount . ' cycles)');
+        $this->keyValue('If/Else', \sprintf('%.2fms', $cpu->ifElseResult * 1000) . self::DIM . ' (' . $cpu->ifElseCount . ' cycles)');
         echo "\n";
     }
 
@@ -140,7 +204,7 @@ final class CliRenderer implements RendererInterface
         $this->sectionTitle('MySQL');
 
         $this->keyValue('Version', (string) $mysql->version);
-        $this->keyValue('Query Time', \sprintf('%.4fs', $mysql->queryTime) . self::DIM . ' (' . $mysql->queryCount . ' cycles, lower is better)');
+        $this->keyValue('Query Time', \sprintf('%.2fms', $mysql->queryTime * 1000) . self::DIM . ' (' . $mysql->queryCount . ' cycles, lower is better)');
         echo "\n";
     }
 
@@ -166,7 +230,7 @@ final class CliRenderer implements RendererInterface
     }
 
     /**
-     * @param array<string, float> $results
+     * @param array<string, float> $results seconds
      */
     private function buildResultTable(array $results): string
     {
@@ -176,7 +240,7 @@ final class CliRenderer implements RendererInterface
         $values = [];
         foreach ($results as $name => $time) {
             $headers[$name] = $name;
-            $values[$name] = \sprintf('%.4fs', $time);
+            $values[$name] = \sprintf('%.2fms', $time * 1000);
         }
 
         return $this->buildTable($headers, [$values]);
