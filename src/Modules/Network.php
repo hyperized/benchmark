@@ -67,7 +67,7 @@ class Network implements BenchmarkModuleInterface
         $total = 0.0;
         for ($i = 0; $i < $cycles; $i++) {
             $start = \microtime(true);
-            $socket = @\fsockopen($host, $port, $errno, $errstr, 5);
+            $socket = @\fsockopen($host, $port, $errno, $errstr, 2);
             $total += \microtime(true) - $start;
 
             if ($socket !== false) {
