@@ -5,15 +5,22 @@ declare(strict_types=1);
 namespace Hyperized\Benchmark;
 
 use Hyperized\Benchmark\Config\Config;
+use Hyperized\Benchmark\Modules\Autoloading;
+use Hyperized\Benchmark\Modules\Compression;
 use Hyperized\Benchmark\Modules\CPU;
 use Hyperized\Benchmark\Modules\Disk;
+use Hyperized\Benchmark\Modules\Encryption;
 use Hyperized\Benchmark\Modules\FileRead;
+use Hyperized\Benchmark\Modules\FunctionOverhead;
+use Hyperized\Benchmark\Modules\Hashing;
 use Hyperized\Benchmark\Modules\Json;
 use Hyperized\Benchmark\Modules\Memory;
 use Hyperized\Benchmark\Modules\MySQL;
 use Hyperized\Benchmark\Modules\Network;
 use Hyperized\Benchmark\Modules\PHP;
 use Hyperized\Benchmark\Modules\Regex;
+use Hyperized\Benchmark\Modules\Serialization;
+use Hyperized\Benchmark\Modules\TypeCasting;
 use Hyperized\Benchmark\Renderer\CliRenderer;
 use Hyperized\Benchmark\Renderer\HtmlRenderer;
 use Hyperized\Benchmark\Report\Report;
@@ -32,6 +39,13 @@ final class Benchmark
         private readonly Json $json,
         private readonly Regex $regex,
         private readonly FileRead $fileRead,
+        private readonly Serialization $serialization,
+        private readonly Hashing $hashing,
+        private readonly Encryption $encryption,
+        private readonly FunctionOverhead $functionOverhead,
+        private readonly TypeCasting $typeCasting,
+        private readonly Autoloading $autoloading,
+        private readonly Compression $compression,
         private readonly MySQL $mysql,
         private readonly ReportWriter $reportWriter,
     ) {}
@@ -48,6 +62,13 @@ final class Benchmark
         $jsonResult = $this->json->isEnabled() ? $this->json->run() : null;
         $regexResult = $this->regex->isEnabled() ? $this->regex->run() : null;
         $fileReadResult = $this->fileRead->isEnabled() ? $this->fileRead->run() : null;
+        $serializationResult = $this->serialization->isEnabled() ? $this->serialization->run() : null;
+        $hashingResult = $this->hashing->isEnabled() ? $this->hashing->run() : null;
+        $encryptionResult = $this->encryption->isEnabled() ? $this->encryption->run() : null;
+        $functionOverheadResult = $this->functionOverhead->isEnabled() ? $this->functionOverhead->run() : null;
+        $typeCastingResult = $this->typeCasting->isEnabled() ? $this->typeCasting->run() : null;
+        $autoloadingResult = $this->autoloading->isEnabled() ? $this->autoloading->run() : null;
+        $compressionResult = $this->compression->isEnabled() ? $this->compression->run() : null;
         $cpuResult = $this->cpu->isEnabled() ? $this->cpu->run() : null;
         $mysqlResult = $this->mysql->isEnabled() ? $this->mysql->run() : null;
 
@@ -62,6 +83,13 @@ final class Benchmark
             json: $jsonResult,
             regex: $regexResult,
             fileRead: $fileReadResult,
+            serialization: $serializationResult,
+            hashing: $hashingResult,
+            encryption: $encryptionResult,
+            functionOverhead: $functionOverheadResult,
+            typeCasting: $typeCastingResult,
+            autoloading: $autoloadingResult,
+            compression: $compressionResult,
             mysql: $mysqlResult,
         );
 

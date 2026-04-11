@@ -27,6 +27,28 @@ benchmark:
   fileRead:
     enabled: true
     cycles: 100
+  serialization:
+    enabled: true
+    count: 9999
+  hashing:
+    enabled: true
+    hashCount: 99999
+    passwordCount: 10
+  encryption:
+    enabled: true
+    count: 9999
+  functionOverhead:
+    enabled: true
+    count: 999999
+  typeCasting:
+    enabled: true
+    count: 999999
+  autoloading:
+    enabled: true
+    count: 99999
+  compression:
+    enabled: true
+    count: 999
   cpu:
     enabled: true
     math:
