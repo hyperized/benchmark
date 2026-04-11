@@ -7,9 +7,13 @@ namespace Hyperized\Benchmark;
 use Hyperized\Benchmark\Config\Config;
 use Hyperized\Benchmark\Modules\CPU;
 use Hyperized\Benchmark\Modules\Disk;
+use Hyperized\Benchmark\Modules\FileRead;
+use Hyperized\Benchmark\Modules\Json;
 use Hyperized\Benchmark\Modules\Memory;
 use Hyperized\Benchmark\Modules\MySQL;
+use Hyperized\Benchmark\Modules\Network;
 use Hyperized\Benchmark\Modules\PHP;
+use Hyperized\Benchmark\Modules\Regex;
 use Hyperized\Benchmark\Renderer\CliRenderer;
 use Hyperized\Benchmark\Renderer\HtmlRenderer;
 use Hyperized\Benchmark\Report\Report;
@@ -24,6 +28,10 @@ final class Benchmark
         private readonly CPU $cpu,
         private readonly Disk $disk,
         private readonly Memory $memory,
+        private readonly Network $network,
+        private readonly Json $json,
+        private readonly Regex $regex,
+        private readonly FileRead $fileRead,
         private readonly MySQL $mysql,
         private readonly ReportWriter $reportWriter,
     ) {}
@@ -36,6 +44,10 @@ final class Benchmark
         $phpResult = $this->php->isEnabled() ? $this->php->run() : null;
         $diskResult = $this->disk->isEnabled() ? $this->disk->run() : null;
         $memoryResult = $this->memory->isEnabled() ? $this->memory->run() : null;
+        $networkResult = $this->network->isEnabled() ? $this->network->run() : null;
+        $jsonResult = $this->json->isEnabled() ? $this->json->run() : null;
+        $regexResult = $this->regex->isEnabled() ? $this->regex->run() : null;
+        $fileReadResult = $this->fileRead->isEnabled() ? $this->fileRead->run() : null;
         $cpuResult = $this->cpu->isEnabled() ? $this->cpu->run() : null;
         $mysqlResult = $this->mysql->isEnabled() ? $this->mysql->run() : null;
 
@@ -46,6 +58,10 @@ final class Benchmark
             cpu: $cpuResult,
             disk: $diskResult,
             memory: $memoryResult,
+            network: $networkResult,
+            json: $jsonResult,
+            regex: $regexResult,
+            fileRead: $fileReadResult,
             mysql: $mysqlResult,
         );
 

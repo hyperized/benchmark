@@ -11,6 +11,22 @@ benchmark:
   memory:
     enabled: true
     count: 9999
+  network:
+    enabled: true
+    cycles: 3
+    hosts:
+      - google.com
+      - cloudflare.com
+      - github.com
+  json:
+    enabled: true
+    count: 9999
+  regex:
+    enabled: true
+    count: 99999
+  fileRead:
+    enabled: true
+    cycles: 100
   cpu:
     enabled: true
     math:
