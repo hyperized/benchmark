@@ -13,6 +13,10 @@ final readonly class BenchmarkResult implements \JsonSerializable
         public ?CpuResult $cpu,
         public ?DiskResult $disk,
         public ?MemoryResult $memory,
+        public ?NetworkResult $network,
+        public ?JsonResult $json,
+        public ?RegexResult $regex,
+        public ?FileReadResult $fileRead,
         public ?MySqlResult $mysql,
     ) {}
 
@@ -37,6 +41,18 @@ final readonly class BenchmarkResult implements \JsonSerializable
         }
         if ($this->memory !== null) {
             $data['memory'] = $this->memory;
+        }
+        if ($this->network !== null) {
+            $data['network'] = $this->network;
+        }
+        if ($this->json !== null) {
+            $data['json'] = $this->json;
+        }
+        if ($this->regex !== null) {
+            $data['regex'] = $this->regex;
+        }
+        if ($this->fileRead !== null) {
+            $data['file_read'] = $this->fileRead;
         }
         if ($this->mysql !== null) {
             $data['mysql'] = $this->mysql;
